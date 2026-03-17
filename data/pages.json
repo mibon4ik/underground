@@ -1,0 +1,28 @@
+[
+  {
+    "id": "page_1773744963222",
+    "icon": "📄",
+    "title": "Новая страница",
+    "eyebrow": "МОЙ РАЗДЕЛ",
+    "description": "Описание страницы",
+    "keywords": "",
+    "blocks": []
+  },
+  {
+    "id": "page_1773745516726",
+    "icon": "📄",
+    "title": "Test Page",
+    "eyebrow": "МОЙ РАЗДЕЛ",
+    "description": "Описание страницыThis is a test page.",
+    "keywords": "",
+    "blocks": [
+      {
+        "id": "b_1773745547799_cqd9l",
+        "type": "text",
+        "icon": "📌",
+        "title": "Заголовок блока",
+        "content": "Введи текст здесь. Поддерживаются переносы строк."
+      }
+    ]
+  }
+]

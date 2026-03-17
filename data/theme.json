@@ -1,0 +1,18 @@
+{
+  "bg": "#070a10",
+  "bg2": "#0d121b",
+  "surface": "#121928",
+  "surface2": "#182132",
+  "surface3": "#0f1520",
+  "stroke": "#273146",
+  "muted": "#97a3b7",
+  "text": "#eef4fb",
+  "accent": "#d8ff47",
+  "accent2": "#65c2ff",
+  "ok": "#22c55e",
+  "warn": "#f59e0b",
+  "danger": "#ef4444",
+  "gold": "#d3b05d",
+  "sidebarBg": "rgba(8,12,18,0.94)",
+  "fontFamily": "Inter, Arial, Helvetica, sans-serif"
+}
