@@ -115,7 +115,7 @@ export default function App() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const customPages = useMemo(() => data.customPages || [], [data.customPages]);
+  const customPages = useMemo(() => Array.isArray(data.customPages) ? data.customPages : [], [data.customPages]);
 
   const handleSearch = (val) => {
     setSearchValue(val);

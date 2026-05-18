@@ -55,12 +55,14 @@ export function useStore() {
           const res = await fetch(`${API_BASE}/data/${key}`);
           if (res.ok) {
             const json = await res.json();
-            return { [stateKey]: json };
+            const wantArray = Array.isArray(data[stateKey]);
+            return { [stateKey]: wantArray ? (Array.isArray(json) ? json : []) : json };
           }
         } catch (e) {
           console.warn(`Failed to fetch ${key}`);
         }
-        return { [stateKey]: Array.isArray(data[stateKey]) ? [] : {} };
+        const wantArray = Array.isArray(data[stateKey]);
+        return { [stateKey]: wantArray ? [] : {} };
       }));
 
       const merged = results.reduce((acc, curr) => ({ ...acc, ...curr }), {});

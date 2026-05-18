@@ -118,7 +118,7 @@ export default function ObjectionsPage({ data }) {
   const [selected, setSelected] = useState(null);
   const [subVariant, setSubVariant] = useState(0);
 
-  const objs = data.objections;
+  const objs = data.objections || [];
   const selectedObj = selected ? objs.find(o => o.id === selected) : null;
 
   if (!selected) {
