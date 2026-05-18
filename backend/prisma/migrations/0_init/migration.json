@@ -1,0 +1,9 @@
+{
+  "version": "5.22.0",
+  "migrationName": "0_init",
+  "startedAt": "2026-05-18T00:00:00.000Z",
+  "finishedAt": "2026-05-18T00:00:01.000Z",
+  "rolledBackAt": null,
+  "checksum": "init",
+  "confirmed": true
+}

@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Setting {
+  id   Int    @id @default(autoincrement())
+  key  String @unique
+  data Json
+}
+
+model Price {
+  id    Int    @id @default(autoincrement())
+  name  String
+  price String
+}
+
+model Coach {
+  id      Int    @id @default(autoincrement())
+  name    String
+  regalia String
+  branch  String
+}
+
+model Branch {
+  id      Int    @id @default(autoincrement())
+  name    String
+  address String
+  video   String?
+}
+
+model ScheduleItem {
+  id       Int    @id @default(autoincrement())
+  day      String
+  time     String
+  activity String
+}
+
+model NewsItem {
+  id      Int    @id @default(autoincrement())
+  title   String
+  date    String
+  content String
+}
+
+model GalleryItem {
+  id      Int    @id @default(autoincrement())
+  url     String
+  caption String?
+}
+
+model Review {
+  id     Int    @id @default(autoincrement())
+  author String
+  text   String
+  rating String
+}
+
+model WorkoutProgram {
+  id   Int    @id @default(autoincrement())
+  name String
+  goal String
+}
+
+model ShopItem {
+  id    Int    @id @default(autoincrement())
+  name  String
+  price String
+}
+
+model Booking {
+  id     Int    @id @default(autoincrement())
+  client String
+  date   String
+  time   String
+}
+
+model Referral {
+  id     Int     @id @default(autoincrement())
+  policy String?
+  bonus  String?
+}
+
+model Promo {
+  id       Int    @id @default(autoincrement())
+  title    String
+  discount String
+  ends     String
+}
+
+model Faq {
+  id Int    @id @default(autoincrement())
+  q  String
+  a  String
+}
+
+model Achievement {
+  id    Int    @id @default(autoincrement())
+  title String
+  desc  String
+  date  String
+}
+
+model Lead {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  name      String?
+  phone     String
+  source    String
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  login        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

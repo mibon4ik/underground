@@ -1,0 +1,4027 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Underground Fitness — Sales Academy</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+/* Base reset and global styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #bfe9ff; text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+
+/* App layout */
+.uf-app {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--stroke); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4a62; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.page-animate {
+  animation: fadeUp 0.22s ease forwards;
+}
+
+/* Common shared atoms */
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.mini-tag {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(216, 255, 71, 0.08);
+  border: 1px solid rgba(216, 255, 71, 0.16);
+  color: #eaf8a3;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 900;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mini-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface3) 100%);
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.32);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  bottom: -60px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.03), transparent 70%);
+}
+
+.card h3 { font-size: 22px; margin-bottom: 10px; }
+.card h4 {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin: 16px 0 8px;
+}
+.card p { line-height: 1.72; color: #dce5f4; }
+
+ul, ol { padding-left: 20px; margin-top: 8px; }
+li { margin: 7px 0; line-height: 1.66; }
+
+.muted { color: var(--muted); }
+
+/* Note boxes */
+.note, .example, .formula, .warn-box, .tip-box, .check-box {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.68;
+}
+.note { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.18); color: #dff8e8; }
+.example { background: rgba(101,194,255,.08); border: 1px solid rgba(101,194,255,.18); }
+.formula { background: rgba(216,255,71,.08); border: 1px solid rgba(216,255,71,.18); }
+.warn-box { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.18); }
+.tip-box { background: rgba(211,176,93,.08); border: 1px solid rgba(211,176,93,.18); }
+.check-box { background: rgba(255,255,255,.04); border: 1px solid var(--stroke); }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* Step badge */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface2);
+  border: 1px solid var(--stroke);
+  color: #9aa7bb;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.step-badge span { color: var(--accent); }
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.chip {
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(216,255,71,.15);
+  font-size: 12px;
+  font-weight: 800;
+  color: #edf6d4;
+}
+
+/* Accent list */
+.accent-list { display: grid; gap: 10px; margin-top: 12px; }
+.accent-item {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.02);
+}
+.accent-item strong { display: block; margin-bottom: 6px; color: #f3f7ff; }
+.accent-item span { color: var(--muted); line-height: 1.65; font-size: 14px; }
+
+/* KPI grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.kpi {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.02);
+}
+.kpi strong { display: block; font-size: 22px; color: var(--accent); margin-bottom: 4px; }
+.kpi span { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* Split */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Timeline */
+.timeline { display: grid; gap: 12px; margin-top: 10px; }
+.timeline-item {
+  position: relative;
+  padding: 16px 16px 16px 58px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,.02);
+}
+.timeline-item .tl-num {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(216,255,71,.12);
+  border: 1px solid rgba(216,255,71,.22);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 1000;
+}
+.timeline-item strong { display: block; margin-bottom: 6px; font-size: 15px; }
+.timeline-item span { color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+/* Dialog */
+.dialog-stack { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.dialog-line { display: flex; gap: 12px; align-items: flex-start; }
+.dialog-speaker {
+  width: 38px;
+  flex-shrink: 0;
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.dialog-speaker.client { color: #98a2b3; }
+.dialog-speaker.manager { color: #7ec7ff; }
+.dialog-bubble {
+  max-width: 1020px;
+  padding: 13px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.72;
+}
+.dialog-bubble.client {
+  background: var(--surface2);
+  border: 1px solid #2b3445;
+  color: #d5dce8;
+  border-top-left-radius: 4px;
+}
+.dialog-bubble.manager {
+  background: #142132;
+  border: 1px solid #2e4768;
+  color: #e6f2ff;
+  border-top-right-radius: 4px;
+}
+
+/* Tabs */
+.tabs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.tab-btn {
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s ease;
+  font-size: 13px;
+}
+.tab-btn:hover { transform: translateY(-1px); border-color: #3a4660; }
+.tab-btn.active {
+  background: linear-gradient(180deg, rgba(216,255,71,.14), rgba(255,255,255,.03));
+  border-color: rgba(216,255,71,.22);
+  color: #f5ffd9;
+}
+
+/* Page header */
+.page-header { margin: 6px 0 18px; }
+.page-title { font-size: 38px; font-weight: 1000; line-height: 1.04; }
+.page-desc { margin-top: 10px; max-width: 900px; color: var(--muted); line-height: 1.75; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 22px; }
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  box-shadow: 0 22px 58px rgba(0,0,0,.32);
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  right: -26px;
+  top: -26px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216,255,71,.08), transparent 70%);
+}
+.stat-card .n { font-size: 30px; font-weight: 1000; color: var(--accent); }
+.stat-card .t { margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* Empty search */
+.empty-search {
+  padding: 18px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+  border: 1px dashed #3a4660;
+  color: #b8c4d9;
+  background: rgba(255,255,255,.02);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin: 28px 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .split { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-title { font-size: 32px; }
+}
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .tabs-row { gap: 6px; }
+  .tab-btn { width: 100%; text-align: center; }
+}
+
+
+/* ── LAYOUT FIX ─────────────────────────────────────── */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+#root {
+  display: flex;
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+/* ── BASE VARS ──────────────────────────────────────── */
+:root{
+  --bg:#070a10;--bg2:#0d121b;--surface:#121928;--surface2:#182132;
+  --surface3:#0f1520;--stroke:#273146;--muted:#97a3b7;--text:#eef4fb;
+  --accent:#d8ff47;--accent2:#65c2ff;--ok:#22c55e;--warn:#f59e0b;
+  --danger:#ef4444;--gold:#d3b05d;
+  --sidebar-bg:rgba(8,12,18,0.94);
+  --font-family:Inter,Arial,Helvetica,sans-serif;
+}
+
+/* ── RESET ──────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{color:#bfe9ff;text-decoration:none}
+button,input,textarea,select{font:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--stroke);border-radius:3px}
+
+/* ── ANIMATIONS ─────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.page-animate{animation:fadeUp .22s ease forwards}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────── */
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:900;margin-bottom:8px}
+.mini-tag{padding:7px 10px;border-radius:999px;background:rgba(216,255,71,.08);border:1px solid rgba(216,255,71,.16);color:#eaf8a3;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;white-space:nowrap;flex-shrink:0}
+.mini-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+
+/* ── CARDS ──────────────────────────────────────────── */
+.card{position:relative;overflow:hidden;padding:20px;border-radius:24px;border:1px solid var(--stroke);background:linear-gradient(180deg,var(--surface) 0%,var(--surface3,var(--surface)) 100%);box-shadow:0 22px 58px rgba(0,0,0,.32)}
+.card::after{content:"";position:absolute;right:-60px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.03),transparent 70%);pointer-events:none}
+.card h3{font-size:22px;margin-bottom:10px}
+.card h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin:16px 0 8px}
+.card p{line-height:1.72;color:#dce5f4}
+ul,ol{padding-left:20px;margin-top:8px}
+li{margin:7px 0;line-height:1.66}
+.muted{color:var(--muted)}
+
+/* ── ALERT BOXES ────────────────────────────────────── */
+.note{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:14px;line-height:1.68;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);color:#dff8e8}
+.example{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:14px;line-height:1.68;background:rgba(101,194,255,.08);border:1px solid rgba(101,194,255,.18)}
+.formula{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:14px;line-height:1.68;background:rgba(216,255,71,.08);border:1px solid rgba(216,255,71,.18)}
+.warn-box{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:14px;line-height:1.68;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18)}
+.tip-box{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:14px;line-height:1.68;background:rgba(211,176,93,.08);border:1px solid rgba(211,176,93,.18)}
+.check-box{margin-top:14px;padding:13px 15px;border-radius:16px;font-size:14px;line-height:1.68;background:rgba(255,255,255,.04);border:1px solid var(--stroke)}
+
+/* ── GRIDS ──────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px}
+.kpi{padding:14px;border-radius:18px;border:1px solid var(--stroke);background:rgba(255,255,255,.02)}
+.kpi strong{display:block;font-size:22px;color:var(--accent);margin-bottom:4px}
+.kpi span{font-size:13px;color:var(--muted);line-height:1.55}
+
+/* ── STEP BADGE ─────────────────────────────────────── */
+.step-badge{display:inline-flex;align-items:center;gap:8px;margin-top:14px;margin-bottom:10px;padding:6px 12px;border-radius:999px;background:var(--surface2);border:1px solid var(--stroke);color:#9aa7bb;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:900}
+.step-badge span{color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.chip{padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(216,255,71,.15);font-size:12px;font-weight:800;color:#edf6d4}
+.accent-list{display:grid;gap:10px;margin-top:12px}
+.accent-item{padding:14px;border-radius:16px;border:1px solid var(--stroke);background:rgba(255,255,255,.02)}
+.accent-item strong{display:block;margin-bottom:6px;color:#f3f7ff}
+.accent-item span{color:var(--muted);line-height:1.65;font-size:14px}
+
+/* ── TIMELINE ───────────────────────────────────────── */
+.timeline{display:grid;gap:12px;margin-top:10px}
+.timeline-item{position:relative;padding:16px 16px 16px 58px;border-radius:18px;border:1px solid var(--stroke);background:rgba(255,255,255,.02)}
+.timeline-item .tl-num{position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(216,255,71,.12);border:1px solid rgba(216,255,71,.22);color:var(--accent);font-size:13px;font-weight:1000}
+.timeline-item strong{display:block;margin-bottom:6px;font-size:15px}
+.timeline-item span{color:var(--muted);font-size:14px;line-height:1.65}
+
+/* ── DIALOG ─────────────────────────────────────────── */
+.dialog-stack{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.dialog-line{display:flex;gap:12px;align-items:flex-start}
+.dialog-speaker{width:38px;flex-shrink:0;margin-top:10px;font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;text-align:center}
+.dialog-speaker.client{color:#98a2b3}.dialog-speaker.manager{color:#7ec7ff}
+.dialog-bubble{padding:13px 16px;border-radius:16px;font-size:14px;line-height:1.72}
+.dialog-bubble.client{background:var(--surface2);border:1px solid #2b3445;color:#d5dce8;border-top-left-radius:4px}
+.dialog-bubble.manager{background:#142132;border:1px solid #2e4768;color:#e6f2ff;border-top-right-radius:4px}
+
+/* ── TABS ───────────────────────────────────────────── */
+.tabs-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tab-btn{padding:10px 14px;border-radius:14px;border:1px solid var(--stroke);background:var(--surface);color:var(--text);font-weight:800;cursor:pointer;transition:.18s ease;font-size:13px}
+.tab-btn:hover{transform:translateY(-1px);border-color:#3a4660}
+.tab-btn.active{background:linear-gradient(180deg,rgba(216,255,71,.14),rgba(255,255,255,.03));border-color:rgba(216,255,71,.22);color:#f5ffd9}
+
+/* ── PAGE HEADER ────────────────────────────────────── */
+.page-header{margin:6px 0 18px}
+.page-title{font-size:36px;font-weight:1000;line-height:1.05;word-break:break-word}
+.page-desc{margin-top:10px;color:var(--muted);line-height:1.75;max-width:800px}
+
+/* ── STATS GRID ─────────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 22px}
+.stat-card{position:relative;overflow:hidden;padding:18px;border-radius:20px;border:1px solid var(--stroke);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));box-shadow:0 22px 58px rgba(0,0,0,.32)}
+.stat-card::before{content:"";position:absolute;right:-26px;top:-26px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,rgba(216,255,71,.08),transparent 70%)}
+.stat-card .n{font-size:30px;font-weight:1000;color:var(--accent)}
+.stat-card .t{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.5}
+
+/* ── MISC ───────────────────────────────────────────── */
+.empty-search{padding:18px;margin-bottom:16px;border-radius:18px;border:1px dashed #3a4660;color:#b8c4d9;background:rgba(255,255,255,.02)}
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:1024px){
+  .grid-2{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr}
+  .split{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .page-title{font-size:28px}
+}
+@media(max-width:640px){
+  .stats-grid{grid-template-columns:1fr}
+  .tabs-row{gap:6px}
+  .tab-btn{width:100%;text-align:center}
+  .page-title{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useCallback,useMemo,useRef}=React;
+
+const INITIAL_DATA = {
+  theme: {
+    bg: '#070a10',
+    bg2: '#0d121b',
+    surface: '#121928',
+    surface2: '#182132',
+    surface3: '#0f1520',
+    stroke: '#273146',
+    muted: '#97a3b7',
+    text: '#eef4fb',
+    accent: '#d8ff47',
+    accent2: '#65c2ff',
+    ok: '#22c55e',
+    warn: '#f59e0b',
+    danger: '#ef4444',
+    gold: '#d3b05d',
+    sidebarBg: 'rgba(8,12,18,0.94)',
+    fontFamily: 'Inter, Arial, Helvetica, sans-serif',
+  },
+  company: {
+    name: 'Underground Fitness',
+    tagline: 'Sales Academy',
+    description:
+      'Единая обучающая база для менеджеров отдела продаж. Внутри собраны материалы по компании, продукту, форматам клубов, этапам консультации, CRM BIG, работе с возражениями, финансовым вопросам и действиям после продажи.',
+    stats: [
+      { value: '2016', label: 'год основания сети' },
+      { value: '11', label: 'филиалов в сети' },
+      { value: '10 000+', label: 'клиентов в месяц' },
+      { value: '170+', label: 'персональных тренеров' },
+    ],
+    values: [
+      { title: 'Результат', desc: 'Ценен сотрудник, который требователен к себе и коллегам и умеет добиваться результата.' },
+      { title: 'Команда', desc: 'Компания готова вкладываться в развитие сотрудников и поддерживать каждый шаг.' },
+      { title: 'Рост', desc: 'Постоянное развитие — основа культуры и долгосрочного успеха.' },
+    ],
+  },
+  product: {
+    halls: {
+      gym: {
+        title: 'GYM формат',
+        items: [
+          'Кардиозона — выносливость и жиросжигание.',
+          'Зона свободных весов — штанги и гантели.',
+          'Грузоблочная зона — безопасные тренировки.',
+          'Зона растяжки — восстановление.',
+        ],
+      },
+      big: {
+        title: 'BIG формат',
+        items: [
+          'Всё из GYM формата.',
+          'Функциональная зона / CrossFit.',
+          'Боксерская зона с рингом (Нажимеденова).',
+          'Финская сауна.',
+        ],
+      },
+      silverBranches: {
+        title: 'Серебряная карта / GYM',
+        items: ['Сейфуллина 1', 'Тархана 17', 'Мангилик Ел 19/2', 'Улы Дала 55', 'Сатпаева 22', 'Кенесары 8', 'Аль-Фараби 7/1'],
+      },
+      goldBranches: {
+        title: 'Золотая карта / BIG+',
+        items: ['Нажимиденова 16', 'Майлина 6Б', 'Туран 60', 'Мухамедханова 25'],
+      },
+      scheduleNote: 'График: понедельник–суббота по расписанию филиала, воскресенье — 10:00–20:00.',
+      presentationGuide: [
+        { title: 'Если клиенту важны цена и базовый функционал', desc: 'Предлагай GYM как достаточный формат для регулярных самостоятельных тренировок.' },
+        { title: 'Если клиенту важны комфорт и зоны', desc: 'Презентуй BIG через функциональную зону, сауну, более богатый набор возможностей.' },
+        { title: 'Если клиенту важен конкретный адрес', desc: 'Привязывай презентацию к его маршруту: дом, работа, удобное время, часы пик и привычный график.' },
+      ],
+    },
+    plans: [
+      {
+        title: 'Серебряная карта',
+        tag: 'gym',
+        items: ['Доступ на все GYM-филиалы.', '7 залов сети.', 'Самостоятельные тренировки.', 'Срок: от 6 до 12 месяцев.'],
+      },
+      {
+        title: 'Золотая карта',
+        tag: 'big+',
+        items: ['Доступ на все 11 филиалов.', 'Включая BIG-залы и сауну.', 'Самостоятельные тренировки.', 'Срок: от 6 до 12 месяцев.'],
+      },
+      {
+        title: 'С тренером (ПТ)',
+        tag: 'персонально',
+        items: ['Индивидуальный план.', 'Контроль питания и техники.', 'Работа с травмами и опорно-двигательным аппаратом.', 'Оплата тренеру отдельно.'],
+      },
+      {
+        title: 'Дежурный тренер',
+        tag: 'дж',
+        items: ['Консультации в зале.', 'Клиент подходит сам.', 'Помощь с техникой.', 'Включён в абонемент.'],
+      },
+    ],
+    pt: {
+      title: 'Персональные тренировки (ПТ)',
+      items: [
+        'Биомеханика и правильное выполнение упражнений.',
+        'Расчёт калорий, нутриентов и индивидуального рациона.',
+        'Регулярные замеры и отчётность по прогрессу.',
+        'Работа с грыжами, протрузиями и реабилитацией.',
+        'Обратная связь 24/7 от персонального тренера.',
+        'Индивидуальная программа с учётом периодизации.',
+      ],
+      tip: 'ПТ продаётся через безопасность, скорость результата, контроль и персональный маршрут, а не просто через слово «тренер».',
+    },
+    dj: {
+      title: 'Дежурный тренер (ДЖ)',
+      items: [
+        'Тренер консультативного характера.',
+        'Находится в зале с открытия до закрытия во всех филиалах.',
+        'Координирует клиентов, помогает с техникой, отвечает на вопросы.',
+        'Работает с клиентами, у которых есть абонемент с услугой дежурного тренера.',
+      ],
+      schedule: ['Понедельник — суббота: с открытия до закрытия.', 'Обед: 12:30–14:00.', 'Воскресенье: дежурный тренер не работает.'],
+      warn: 'Важно не обещать клиенту формат персонального сопровождения под видом дежурного тренера.',
+    },
+    groups: {
+      items: [
+        'Хатха-йога — гибкость, баланс, дыхание, восстановление.',
+        'Стретчинг — растяжка, гибкость, профилактика травм.',
+        'Power Train — силовой формат, развитие силы и выносливости.',
+        'Fitness Mix — силовые + функциональные + кардио.',
+        'Booty — акцент на ягодицы и нижнюю часть тела.',
+        'Cardio — интенсивная тренировка на выносливость и снижение жировой массы.',
+      ],
+      rules: [
+        'Запись заранее через приложение.',
+        'Опаздывать запрещено.',
+        'При опоздании — закрытие доступа на 1 неделю.',
+        'При повторном опоздании — закрытие доступа на 2 недели.',
+        'Проводятся на филиалах Майлина 6Б и Мухамедханова 25.',
+      ],
+    },
+    finance: {
+      formula: 'Валовая прибыль = сумма продажи − процент рассрочки. Пример: 250 000 ₸ − 13% (Каспи рассрочка) = 217 500 ₸ валовой прибыли.',
+      physDocs: [
+        'ФИО получателя по УДЛ.',
+        'ИИН.',
+        'Адрес проживания.',
+        'Контакты.',
+        'Услуга и количество.',
+        'Итоговая сумма.',
+        'Вид договора: оферта / договор / без договора.',
+        'Вид оплаты: нал / безнал.',
+        'ФИО менеджера.',
+      ],
+      legalDocs: [
+        'Наименование компании.',
+        'БИН и юридический адрес.',
+        'ИИК и контакты бухгалтерии.',
+        'Услуги и количество.',
+        'Итоговая сумма.',
+        'Вид договора.',
+        'ФИО менеджера.',
+      ],
+      tips: [
+        'Показывай стоимость через месяц и через тренировку.',
+        'Если есть рассрочка — объясняй как инструмент удобства, а не как обязательство.',
+        'Если клиент против рассрочки — спокойно уходи в оплату сразу.',
+        'Для договора и реализации у менеджера всё должно быть собрано без пробелов.',
+      ],
+    },
+    afterSale: {
+      steps: [
+        'Внести информацию в WhatsApp-чат филиала.',
+        'Указать ФИО клиента и номер телефона.',
+        'Указать вид абонемента: ПТ / ДЖ / самост.',
+        'Указать сумму продажи, процент и банк рассрочки.',
+        'Указать бонусы от менеджера и стоимость абонемента.',
+        'Добавить примечания: активация, заморозка и др.',
+        'Поздравить клиента и сообщить, что администратор свяжется в течение дня.',
+      ],
+      example: 'Садвакасова Дарига 87714303693 • 2ПТ + 10 самост. + ЗК • 280 000 − 13% Каспи • 48 000 тренеру • Заморозка 1 мес + 7 гостевых • Активация с первого посещения',
+      warn: 'Поиск тренера — не обязанность менеджера. Менеджер поздравляет клиента и передаёт информацию дальше.',
+    },
+  },
+  sales: {
+    stages: [
+      {
+        id: 1,
+        title: 'Этап 1 — Установление контакта',
+        items: ['Как меня зовут.', 'Откуда я.', 'Зачем звоню.', 'Как зовут клиента.'],
+        good: 'Пример: «Добрый день, меня зовут Арайлым, я менеджер Underground Gym. Как к вам обращаться?»',
+        bad: 'Плохо: «Алло, вы звонили по абонементу? Что вас интересует?» — без доверия и нормального входа.',
+      },
+      {
+        id: 2,
+        title: 'Этап 2 — Вопросы / квалификация',
+        items: [
+          'Какой филиал интересует: ближе к дому или работе?',
+          'Есть ли опыт тренировок?',
+          'Есть ли травмы или противопоказания?',
+          'Какая цель и боль клиента?',
+          'На что обращает внимание при выборе?',
+        ],
+        tip: 'Если клиент не хочет отвечать — можно дать прайс и задавать вопросы по ходу разговора, но квалификация всё равно обязательна.',
+      },
+      {
+        id: 3,
+        title: 'Этап 3 — Презентация',
+        items: [
+          'Презентация строится только на ответах клиента.',
+          'Презентуем филиал, услуги и формат, которые подходят под запрос.',
+          'Цены — с месяца, от меньшего к большему, а не наоборот.',
+          'Подбор абонемента — один точный вариант под потребность.',
+        ],
+        formula: 'Формула презентации: потребность → подходящий филиал → нужный формат → цена с месяца → усиление акцией или выгодой.',
+      },
+      {
+        id: 4,
+        title: 'Этап 4 — Закрытие',
+        items: ['«Берём?»', '«Оформляем?»', '«Подходят ли вам наши услуги?»', '«Зафиксируем за вами абонемент?»'],
+        tip: 'После вопроса на закрытие молчи. Клиент должен ответить первым.',
+      },
+      {
+        id: 5,
+        title: 'Этап 5 — Работа с возражениями',
+        desc: 'Грамотная консультация снижает число возражений. Но если они появились — это не отказ, а запрос на другой аргумент: удобство, стоимость, безопасность, срок или доверие.',
+      },
+      {
+        id: 6,
+        title: 'Этап 6 — Дожим / 3 касания',
+        items: ['Касание 1 — в день обращения через 3–5 часов.', 'Касание 2 — на следующий день.', 'Касание 3 — через 2–3 дня.'],
+        example: '1: «[Имя], что думаете? Зафиксируем? Условия действуют до конца дня.»\n2: «Могу оформить в рассрочку — сегодня ничего не платите.»\n3: «Держу для вас предложение — если не актуально, сниму бронь.»',
+      },
+      {
+        id: 7,
+        title: 'Этап 7 — Предзакрытие',
+        items: ['«Круто!»', '«Прекрасно!»', '«Замечательно!»', '«Давайте я задам вам несколько вопросов»', '«Подберём самый эффективный абонемент»', '«И оформим его — хорошо?»'],
+        check: 'Предзакрытие = разогрев. Клиент начинает соглашаться ещё до финального вопроса.',
+      },
+      {
+        id: 8,
+        title: 'Этап 8 — Эмоции + структура',
+        items: ['Улыбка слышна в голосе.', 'Ровный темп, без монотонности.', 'Тепло и искренность.', 'Уверенность в продукте.', 'Плавные переходы между этапами.'],
+        bad: 'Плохо: вываливать все цены, услуги и бонусы подряд без логики. Клиент теряется и «засыпает».',
+      },
+    ],
+    cases: [
+      {
+        name: 'Нурбол',
+        tag: 'дожим → закрытие',
+        desc: 'Сказал: «нет денег». Арайлым сделала 3 касания за 2 дня. На третьем касании предложила рассрочку без первого платежа.',
+        result: 'Результат: продажа в 22:08. Вывод: возражение «нет денег» часто решается удобной формой оплаты и дисциплиной касаний.',
+      },
+      {
+        name: 'Елизавета',
+        tag: 'адаптация оффера',
+        desc: 'Не хотела годовой вариант. Арайлым сразу предложила 6 месяцев и сделала follow-up на следующий день.',
+        result: 'Результат: продажа на 120 000 ₸. Вывод: не настаивай на одном пакете, если клиент даёт явный сигнал по сроку.',
+      },
+      {
+        name: 'Мадина',
+        tag: 'двойная продажа',
+        desc: 'Клиент ждала подругу. Арайлым предложила зафиксировать абонемент и дать выгоду обеим.',
+        result: 'Результат: две продажи по 190 000 ₸. Вывод: если звучит друг / подруга / муж / жена — ищи сценарий парной продажи.',
+      },
+      {
+        name: 'Гумырбек',
+        tag: 'раскусил скрипт',
+        desc: 'Сказал, что сам в продажах с 2008 года. Арайлым не растерялась, ответила честно и предложила пробное.',
+        result: 'Результат: клиент вернулся через 4 дня. Вывод: когда «раскусили», не уходи в спор — уходи в честность и действие.',
+      },
+    ],
+  },
+  crm: {
+    kpis: [
+      { value: '5 мин', label: 'на принятие лида' },
+      { value: '3', label: 'обязательных касания' },
+      { value: '12', label: 'этапов воронки BIG' },
+      { value: '15', label: 'полей при продаже' },
+    ],
+    steps: [
+      {
+        title: 'Шаг 1 — Лид из таблицы',
+        tag: '5 минут',
+        items: ['Поставить КВАЛ или БРАК.', 'Написать примечание: что за клиент, откуда, контекст.', 'Поставить статус «В работе».'],
+      },
+      {
+        title: 'Шаг 2 — Новая сделка',
+        tag: 'если нет в CRM',
+        items: ['Нажать «+ Новая сделка».', 'Добавить номер телефона.', 'Поставить статус «Новый лид».', 'Назначить себя ответственным.', 'Сразу поставить задачу.'],
+        ordered: true,
+      },
+      {
+        title: 'Шаг 3 — Автосделка',
+        tag: 'если клиент уже был',
+        items: ['Берём в работу автосделку, если система создала её автоматически.', 'Старые закрытые сделки не трогаем и не редактируем.', 'Если автосделки нет — создаём новую вручную.'],
+      },
+      {
+        title: 'Шаг 4 — Смена воронки',
+        tag: 'big',
+        items: ['Открыть сделку.', 'Найти поле «Воронка».', 'Выбрать воронку BIG.', 'Поставить статус «Новый лид».', 'Назначить себя ответственным.'],
+        ordered: true,
+        warn: 'Сначала ставим «Новый лид», потом назначаем себя ответственным.',
+      },
+      {
+        title: 'Шаг 5 — Постановка задачи',
+        tag: 'контроль',
+        items: ['Сразу после взятия лида.', 'Дата и время следующего контакта.', 'Тип задачи: звонок / WhatsApp / встреча.', 'Комментарий — что обсудить с клиентом.'],
+        note: 'Нет задачи = потерянный клиент.',
+      },
+      {
+        title: 'Шаг 6 — Примечание',
+        tag: 'история',
+        items: ['Написать результат разговора — что сказал клиент, что решили.', 'Если писал с личного WhatsApp — прикрепить скриншот переписки.', 'Писать сразу после контакта, пока всё свежо.'],
+        tip: 'Примечание = история клиента. По нему проверяет руководитель.',
+      },
+      {
+        title: 'Шаг 7 — 3 касания',
+        tag: 'очень важно',
+        items: ['Звонок клиенту.', 'Сообщение WhatsApp.', 'Примечание в CRM.'],
+        ordered: true,
+        warn: 'Без фиксации в CRM касание не считается.',
+      },
+      {
+        title: 'Шаг 8 — Как звонить',
+        tag: 'через карточку',
+        items: ['Нажать на номер телефона слева в карточке клиента.', 'Выбрать способ связи: звонок через CRM / WhatsApp / личный звонок.', 'Звонок через CRM фиксируется автоматически.'],
+      },
+    ],
+    funnel: ['Новый лид', 'Не установлен контакт', 'Контакт установлен', 'Проконсультирован', 'Отработка', 'Приглашён', 'Был на филиале', 'Наработка', 'Счёт направлен', 'Предоплата получена', 'Успешно реализована', 'Отменён'],
+    requiredFields: ['Ответственный', 'Бюджет', 'Валовая прибыль', 'Взял в работу', 'Дата покупки', 'Дата окончания абонемента', 'Способ оплаты', 'Срок абонемента', 'Канал привлечения', 'Повторная покупка', 'Вид услуги', 'Тип услуги', 'Филиал', 'ФИО клиента', 'Телефон'],
+    checklist: [
+      { title: 'Я перевёл сделку в BIG', desc: 'Воронка должна соответствовать процессу.' },
+      { title: 'Я поставил статус «Новый лид»', desc: 'Без правильного статуса процесс ломается.' },
+      { title: 'Я назначил себя ответственным', desc: 'Сделка должна быть закреплена.' },
+      { title: 'Я поставил задачу', desc: 'Есть время следующего контакта.' },
+      { title: 'Я сделал 3 касания', desc: 'Звонок + WhatsApp + примечание в CRM.' },
+      { title: 'Я написал примечание', desc: 'Результат общения должен быть зафиксирован.' },
+    ],
+  },
+  objections: [
+    {
+      id: 'rule',
+      icon: '⚡',
+      title: 'Правило 3Н',
+      category: 'rule',
+      isRule: true,
+      rules: [
+        { num: '1', title: 'Присоединение', desc: 'Не спорим, не давим. Показываем, что услышали клиента и относимся к его сомнению нормально.' },
+        { num: '2', title: 'Вопрос или аргумент', desc: 'Копаем глубже. Ищем настоящую причину возражения и не отвечаем мимо сути.' },
+        { num: '3', title: 'Последний козырь', desc: 'Даём конкретное предложение с ограничением или следующим шагом. После — отпускаем клиента тепло.' },
+      ],
+    },
+    {
+      id: 'expensive',
+      icon: '💰',
+      title: 'Дорого',
+      category: 'classic',
+      homeDesc: 'Не понимает ценность или неудобно по деньгам',
+      principle: '«Дорого» почти никогда не значит «нет денег». Чаще это «не понимаю за что плачу». Задача — выяснить что именно дорого, и перевести в ценность через конкретные цифры.',
+      tip: 'Не снижай цену первым. Сначала покажи ценность через математику — потом рассрочка как мягкий выход.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Ну не знаю, дороговато как-то...' },
+            { role: 'manager', text: 'Понимаю. А дорого — это прямо сейчас неудобно по деньгам, или в целом кажется много за фитнес?' },
+            { role: 'client', text: 'Ну в целом, 100 тысяч за зал — серьёзно.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'manager', text: 'Смотрите, давайте посчитаем. 100 тысяч на год — это 8 500 в месяц. В месяце в среднем 12 тренировок. Выходит около 700 тенге за тренировку. Стакан кофе дороже. При этом — тренеры, оборудование, групповые — всё включено.' },
+            { role: 'client', text: 'Ну да, если так смотреть...' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Плюс у нас есть рассрочка — разбиваем на 3 месяца, не нужно сразу всё отдавать. И первая тренировка бесплатно — приходите, почувствуете клуб своими ногами, потом решите.' }],
+        },
+      ],
+    },
+    {
+      id: 'think',
+      icon: '🤔',
+      title: 'Подумаю',
+      category: 'classic',
+      homeDesc: 'Вежливый способ уйти без решения',
+      principle: '«Подумаю» — это вежливый способ уйти. За этим всегда стоит что-то конкретное: цена, сомнение, нужно с кем-то посоветоваться.',
+      tip: 'Дедлайн называй в конце — не в начале. Сначала дай причину прийти, потом ограничение.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Ладно, я подумаю наверное.' },
+            { role: 'manager', text: 'Хорошо. Скажите, а что именно хотите обдумать? Может, что-то не так объяснил или остались вопросы — давайте сразу закроем.' },
+            { role: 'client', text: 'Ну просто хочу ещё раз всё взвесить.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'manager', text: 'Понял. Чтобы не взвешивать вслепую — приходите на бесплатную тренировку. Никакого давления, просто посмотрите зал, пообщаетесь с тренером. Час — и уже будет что взвешивать.' },
+            { role: 'client', text: 'Ну не знаю...' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Вот что скажу честно — у нас сейчас акция, она заканчивается в пятницу. После цена будет выше на 15%. Не тороплю, но чтобы вы знали. Когда вам удобно в ближайшие дни?' }],
+        },
+      ],
+    },
+    {
+      id: 'time',
+      icon: '⏰',
+      title: 'Нет времени',
+      category: 'classic',
+      homeDesc: 'Вопрос приоритетов, а не реального времени',
+      principle: 'Время — это вопрос приоритетов. Задача — не спорить, а найти хоть одно реальное окно в расписании и зацепиться за него.',
+      tip: 'Не говори «найдите время» — это звучит как упрёк. Помоги найти конкретный слот.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Хотел бы, но времени совсем нет, загружен сильно.' },
+            { role: 'manager', text: 'Понимаю, у большинства наших клиентов такая же история. А в какое время обычно чуть свободнее — утром или вечером?' },
+            { role: 'client', text: 'Ну вечером наверное, после 7.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'manager', text: 'Отлично, у нас до 23:00 работаем. Тренировка — 45-50 минут. Три раза в неделю. Это всё. Никто не требует каждый день.' },
+            { role: 'client', text: 'Ну три раза — это тоже надо выкроить...' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Давайте вот что сделаем — запишу вас на одну тренировку в удобный день вечером. Придёте, потренируетесь, посмотрите как это по времени вписывается. Один раз точно найдётся, правда?' }],
+        },
+      ],
+    },
+    {
+      id: 'discuss',
+      icon: '👥',
+      title: 'Обсудить с кем-то',
+      category: 'classic',
+      homeDesc: 'Нужно одобрение близкого человека',
+      principle: 'Уважаем, не давим. Задача — не дать этому разговору уйти в пустоту. Либо помогаем организовать встречу, либо даём информацию для передачи, либо дедлайн.',
+      tip: 'Если муж/жена против фитнеса в принципе — предложи прийти вместе.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Мне нужно с мужем посоветоваться сначала.' },
+            { role: 'manager', text: 'Конечно, это нормально. А муж в принципе поддерживает идею с фитнесом, или есть сомнения с его стороны?' },
+            { role: 'client', text: 'Да нет, он не против, просто хочу чтобы он знал.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'manager', text: 'Понял. Тогда так — я сброшу вам на WhatsApp всю информацию: условия, цены, что входит. Покажете мужу, всё будет перед глазами, не нужно ничего пересказывать.' },
+            { role: 'client', text: 'Ну хорошо.' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'И ещё момент — если решите до пятницы, у нас сейчас акция. После неё цена другая. Просто имейте в виду. Договорились?' }],
+        },
+      ],
+    },
+    {
+      id: 'installment',
+      icon: '💳',
+      title: 'Против рассрочки',
+      category: 'classic',
+      homeDesc: 'Не хочет кредитных обязательств',
+      principle: 'Не навязываем. Рассрочка — это инструмент, а не обязаловка. Убираем без лишних слов и превращаем в плюс — при единовременной оплате скидка больше.',
+      tip: 'Это самое простое возражение. Не спорь — просто убери рассрочку и закрывай сделку.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Не хочу никакие рассрочки, не люблю это.' },
+            { role: 'manager', text: 'Всё понял, никаких проблем — оплатим сразу. Картой, наличными, переводом — любой вариант. Рассрочка просто как опция была.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'client', text: 'Ну окей, тогда сколько выходит сразу?' },
+            { role: 'manager', text: 'За годовой — [сумма]. Кстати, при единовременной оплате скидка больше, чем при помесячной. Так что вы ещё и в плюсе. Оформляем?' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'self',
+      icon: '✋',
+      title: 'Сам решу',
+      category: 'classic',
+      homeDesc: 'Клиент закрывается, давить бесполезно',
+      principle: 'Клиент закрывается. Давить — только хуже. Задача — оставить дверь открытой, дать мягкий дедлайн и попробовать выяснить настоящую причину.',
+      tip: 'После третьего «нет» — отпускаем тепло. Клиент должен уйти с хорошим впечатлением. Он может вернуться или привести друга.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Ладно, я сам разберусь, если что — напишу.' },
+            { role: 'manager', text: 'Хорошо, не вопрос. Я скину контакт в WhatsApp — напишете когда будете готовы.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [{ role: 'manager', text: 'Только один момент — акция, которую называл, до пятницы. После цена вырастет. Не тороплю, просто чтобы потом не было сюрприза.' }],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Если что-то смутило в разговоре — скажите честно, не обижусь. Иногда просто что-то не так объяснил.' }],
+        },
+      ],
+    },
+    {
+      id: 'month',
+      icon: '📅',
+      title: 'На месяц попробовать',
+      category: 'classic',
+      homeDesc: 'Хочет минимальное обязательство',
+      principle: 'Месяц — это вход, не отказ. Задача — честно объяснить почему месяц не даст результата, и предложить апгрейд с конкретной выгодой или гарантией.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Давайте я сначала на месяц возьму, попробую.' },
+            { role: 'manager', text: 'Месяц есть, оформим. Но скажу честно — за месяц результата не увидите. Тело первые 3-4 недели просто адаптируется, это физиология. Многие бросают именно тогда, когда ещё чуть-чуть — и пошло бы.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'client', text: 'Ну я просто хочу понять подойдёт ли мне вообще.' },
+            { role: 'manager', text: 'Для этого у нас как раз есть бесплатная тренировка — приходите, позанимаетесь, поймёте нравится или нет. Это честнее чем месяц платить и не понять.' },
+            { role: 'client', text: 'Ну ладно, а если всё-таки месяц?' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Смотрите — месяц стоит [сумма]. Три месяца — [сумма]. Разница [X] тысяч, но за три месяца вы реально увидите изменения. Если после первых двух недель почувствуете что не ваше — я лично переоформлю и верну разницу. По рукам?' }],
+        },
+      ],
+    },
+    {
+      id: 'negative',
+      icon: '😤',
+      title: 'Негативный опыт',
+      category: 'hard',
+      homeDesc: 'Уже был в клубе — что-то не понравилось',
+      subVariants: [
+        {
+          id: 'crowded_past',
+          label: 'Зал был переполнен',
+          principle: 'Не оправдываемся и не спорим. Признаём — клиент должен почувствовать что его услышали. Потом показываем что конкретно изменилось.',
+          tip: 'Не защищай клуб — дай клиенту убедиться самому. Бесплатная тренировка здесь работает лучше любых слов.',
+          steps: [
+            {
+              label: '1',
+              lines: [
+                { role: 'client', text: 'Я у вас занималась раньше, зал был забит, вообще некомфортно было.' },
+                { role: 'manager', text: 'Слышу вас, и не буду говорить что этого не было. Было, знаю. С тех пор расширили зал и изменили расписание. Скажите, в какое время вы обычно приходили?' },
+                { role: 'client', text: 'Ну вечером, после работы.' },
+              ],
+            },
+            {
+              label: '2',
+              lines: [{ role: 'manager', text: 'Вечером 19-21 — да, самый пик. Но сейчас даже в пик заметно свободнее. Давайте вот что — приходите на бесплатную тренировку именно в то время когда вам удобно. Сами увидите как сейчас, не на слово же мне верить.' }],
+            },
+          ],
+        },
+        {
+          id: 'no_attention',
+          label: 'Тренеры не уделяли внимания',
+          principle: 'Согласиться — это не слабость. Тренер который не работает с клиентом — это плохо. Признай и предложи проверить лично.',
+          tip: 'Когда говоришь «я сам скажу не брать» — это сильно повышает доверие. Клиент понимает что ты не просто продаёшь.',
+          steps: [
+            {
+              label: '1',
+              lines: [
+                { role: 'client', text: 'Тренеры у вас тогда вообще не подходили, занималась сама по себе.' },
+                { role: 'manager', text: 'Это неправильно, согласен. Тренер который не работает с клиентом — это не тренер. У нас сейчас другой подход, часть команды обновилась. Но лучше не рассказывать — давайте запишу на вводную тренировку с конкретным тренером.' },
+              ],
+            },
+            {
+              label: '2',
+              lines: [{ role: 'manager', text: 'Час один на один, бесплатно. Если после скажете что ничего не изменилось — я сам скажу вам не брать абонемент.' }],
+            },
+          ],
+        },
+        {
+          id: 'didnt_go',
+          label: 'Купил и не ходил',
+          principle: 'Не осуждаем. Выясняем почему — и предлагаем структуру которой раньше не было.',
+          steps: [
+            {
+              label: '1',
+              lines: [
+                { role: 'client', text: 'Был у вас уже, взял абонемент и ходил раза три наверное.' },
+                { role: 'manager', text: 'Понял. А почему перестали ходить — жизнь закрутила, или что-то в клубе не устроило?' },
+                { role: 'client', text: 'Ну просто не пошло как-то, мотивации не было.' },
+              ],
+            },
+            {
+              label: '2',
+              lines: [{ role: 'manager', text: 'Это честно. Абонемент сам по себе мотивацию не даёт — правда. Поэтому сейчас делаем иначе: при оформлении сразу записываем на первые тренировки с тренером. Не когда хочется, а конкретные дни и время. Первые 2-3 недели тренер ведёт, потом сами. Привычка формируется именно в этот период.' }],
+            },
+            {
+              label: '3',
+              lines: [{ role: 'manager', text: 'Попробуем так?' }],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'result',
+      icon: '🚫',
+      title: 'Недоверие к результату',
+      category: 'hard',
+      homeDesc: 'Пробовал — не помогло',
+      subVariants: [
+        {
+          id: 'tried_failed',
+          label: 'Пробовал худеть — не помогло',
+          principle: 'Не обещаем золотые горы. Клиент уже слышал обещания. Говорим честно и конкретно — и выясняем чего не было раньше.',
+          steps: [
+            {
+              label: '1',
+              lines: [
+                { role: 'client', text: 'Я столько всего пробовала — диеты, залы, ничего не работает.' },
+                { role: 'manager', text: 'Верю. И не буду говорить что у нас какая-то магия. Скажите — когда пробовали, был кто-то кто составлял программу конкретно под вас, контролировал питание, следил за прогрессом?' },
+                { role: 'client', text: 'Ну нет, в общем-то сама разбиралась.' },
+              ],
+            },
+            {
+              label: '2',
+              lines: [{ role: 'manager', text: 'Вот в этом и дело. Сама — это лотерея. Можно угадать, а можно годами делать что-то не то и не понимать почему нет результата. Наш тренер работает с вашей конкретной ситуацией — не по шаблону.' }],
+            },
+            {
+              label: '3',
+              lines: [{ role: 'manager', text: 'Давайте просто придёте на первую тренировку — тренер посмотрит на вашу подготовку и честно скажет что реально, а что нет. Без продаж.' }],
+            },
+          ],
+        },
+        {
+          id: 'bought_didnt_go',
+          label: 'Покупала абонементы и не ходила',
+          principle: 'Клиент не верит в себя. Не переубеждаем словами — снижаем барьер до минимума и даём маленькую победу.',
+          tip: 'Клиент который говорит «я знаю что не пойду» — это не потерянный клиент. Это клиент которому нужно больше доверия.',
+          steps: [
+            {
+              label: '1',
+              lines: [
+                { role: 'client', text: 'Я знаю себя, куплю и опять не пойду.' },
+                { role: 'manager', text: 'Хорошо что говорите честно, это уже половина дела. А почему не ходили — далеко, не интересно, или просто не было системы?' },
+                { role: 'client', text: 'Просто не было привычки наверное.' },
+              ],
+            },
+            {
+              label: '2',
+              lines: [{ role: 'manager', text: 'Привычка не появляется сама — нужна точка входа. Не берите сразу годовой. Начнём с малого: запишитесь на бесплатную тренировку, придите один раз. Если зайдёт — уже будем обсуждать абонемент.' }],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'medical',
+      icon: '🏥',
+      title: 'Медицинские страхи',
+      category: 'hard',
+      homeDesc: 'Беспокоится о здоровье',
+      principle: 'Не давим и не обесцениваем. Здоровье — серьёзно. Мы не против врача — мы за. Показываем что тренировки под контролем безопаснее чем самостоятельно.',
+      tip: 'Обязательно бери номер и сам звони через неделю. Без follow-up этот клиент потеряется.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Мне нужно сначала с врачом посоветоваться, у меня спина болит.' },
+            { role: 'manager', text: 'Правильно делаете, что советуетесь. Серьёзно. Мы сами всегда говорим — если есть проблемы со здоровьем, сначала врач. Что именно со спиной, если не секрет?' },
+            { role: 'client', text: 'Остеохондроз, периодически прихватывает.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'manager', text: 'Понял. Со спиной мы работаем — есть тренеры с опытом именно с такими случаями. Но сначала врач — пусть скажет что можно, что нельзя. После тренер составит программу с учётом ограничений. Вы к врачу в ближайшее время идёте?' },
+            { role: 'client', text: 'Да, на следующей неделе.' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Отлично. Давайте я запишу ваш номер и напомню через неделю. Сходите к врачу, получите добро — и придёте на бесплатную тренировку. Договорились?' }],
+        },
+      ],
+    },
+    {
+      id: 'crowded',
+      icon: '🏋️',
+      title: 'Переполненность зала',
+      category: 'hard',
+      homeDesc: 'Слышал или видел много людей в зале',
+      principle: 'Не отрицаем пик — это выглядит как ложь. Честно говорим про загруженное время и предлагаем клиенту убедиться самому.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Слышала что у вас всегда народу много, не протолкнуться.' },
+            { role: 'manager', text: 'Скажу честно — в час пик да, оживлённо. Это живой клуб, люди ходят. Но в 7 утра, в обед и после 21:00 — зал полупустой. Зависит от времени.' },
+            { role: 'client', text: 'Ну я работаю до 18, раньше 19 не смогу.' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [{ role: 'manager', text: '19-21 — пик, не скрою. Но это не значит что нет места — просто людей больше. Оборудования хватает. Приходите на бесплатную тренировку в ваше время — сами оцените комфортно или нет.' }],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Если скажете что тесно — я это приму. Но сначала посмотрите своими глазами. Записываю вас на этой неделе?' }],
+        },
+      ],
+    },
+    {
+      id: 'lazy',
+      icon: '😴',
+      title: 'Я ленивый',
+      category: 'hard',
+      homeDesc: 'Не верит в себя — самое честное возражение',
+      principle: 'Самое честное возражение. Клиент не врёт — он реально в себя не верит. Не переубеждаем словами. Снижаем барьер до абсолютного минимума и даём маленькую победу.',
+      tip: 'Не говори «вы точно будете ходить» — это звучит фальшиво. Задача сейчас — одна тренировка. Дальше тело само начнёт требовать.',
+      steps: [
+        {
+          label: '1',
+          lines: [
+            { role: 'client', text: 'Я вообще-то ленивый человек, куплю и не пойду — сам знаю.' },
+            { role: 'manager', text: 'Уважаю за честность, серьёзно. Скажите — а почему вообще сюда пришли, если знаете что не пойдёте?' },
+            { role: 'client', text: 'Ну хочется же что-то изменить...' },
+          ],
+        },
+        {
+          label: '2',
+          lines: [
+            { role: 'manager', text: 'Вот именно. Желание есть — лень просто перекрывает. Это нормально, с этим работают. Смотрите — не надо сразу брать абонемент. Приходите на одну бесплатную тренировку. Один раз. Не понравится — уйдёте и забудете.' },
+            { role: 'client', text: 'Ну один раз наверное да.' },
+          ],
+        },
+        {
+          label: '3',
+          lines: [{ role: 'manager', text: 'Вот и всё. Один раз даже ленивый человек может. Записываю. Когда удобно — в будни или выходные?' }],
+        },
+      ],
+    },
+  ],
+  customPages: [],
+
+};
+
+
+const STORAGE_KEY = 'uf_academy_v2';
+
+function useStore() {
+  const [data, setData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Deep merge with initial data to ensure new fields are present
+        return deepMerge(INITIAL_DATA, parsed);
+      }
+    } catch (e) {
+      console.warn('Failed to load from localStorage', e);
+    }
+    return INITIAL_DATA;
+  });
+
+  const save = useCallback((newData) => {
+    setData(newData);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+    } catch (e) {
+      console.warn('Failed to save to localStorage', e);
+    }
+  }, []);
+
+  const update = useCallback((path, value) => {
+    setData(prev => {
+      const next = deepSet(prev, path, value);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+  }, []);
+
+  const reset = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    setData(INITIAL_DATA);
+  }, []);
+
+  const exportData = useCallback(() => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'uf-academy-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [data]);
+
+  const importData = useCallback((json) => {
+    try {
+      const parsed = JSON.parse(json);
+      save(parsed);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }, [save]);
+
+  return { data, save, update, reset, exportData, importData };
+}
+
+function deepMerge(base, override) {
+  if (typeof base !== 'object' || base === null) return override ?? base;
+  if (typeof override !== 'object' || override === null) return base;
+  if (Array.isArray(base)) return Array.isArray(override) ? override : base;
+  const result = { ...base };
+  for (const key of Object.keys(override)) {
+    if (key in base) {
+      result[key] = deepMerge(base[key], override[key]);
+    } else {
+      result[key] = override[key];
+    }
+  }
+  return result;
+}
+
+function deepSet(obj, path, value) {
+  if (!path.length) return value;
+  const [head, ...tail] = path;
+  if (Array.isArray(obj)) {
+    const arr = [...obj];
+    arr[head] = deepSet(arr[head], tail, value);
+    return arr;
+  }
+  return { ...obj, [head]: deepSet(obj[head], tail, value) };
+}
+
+
+
+const styles = `
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(16px);
+  border-right: 1px solid var(--stroke);
+  padding: 16px 12px 20px;
+  z-index: 40;
+}
+.brand-box {
+  padding: 16px;
+  border-radius: 22px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+  box-shadow: 0 22px 58px rgba(0,0,0,.32);
+  margin-bottom: 16px;
+}
+.brand {
+  font-size: 31px;
+  line-height: 0.98;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.brand-accent { color: var(--accent); }
+.subbrand { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.sidebar-search-wrap { position: relative; margin-bottom: 14px; }
+.sidebar-search {
+  width: 100%;
+  padding: 14px 15px 14px 42px;
+  border-radius: 15px;
+  border: 1px solid var(--stroke);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: 0.18s ease;
+  font-size: 14px;
+}
+.sidebar-search:focus {
+  border-color: rgba(216,255,71,.34);
+  box-shadow: 0 0 0 4px rgba(216,255,71,.08);
+}
+.sidebar-search::placeholder { color: #78849a; }
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7d8aa0;
+  font-size: 16px;
+  pointer-events: none;
+}
+.nav-title {
+  padding: 10px 10px 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7f8aa0;
+  font-weight: 900;
+}
+.nav-group { display: flex; flex-direction: column; gap: 6px; }
+.nav-item {
+  width: 100%;
+  text-align: left;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #e0e9f7;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-item:hover {
+  background: var(--surface);
+  border-color: var(--stroke);
+  transform: translateX(2px);
+}
+.nav-item.active {
+  background: linear-gradient(180deg,rgba(216,255,71,.14),rgba(255,255,255,.03));
+  border-color: rgba(216,255,71,.22);
+  color: #f4ffd0;
+}
+.nav-item-icon { font-size: 16px; flex-shrink: 0; }
+.sidebar-note {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg,rgba(101,194,255,.08),rgba(255,255,255,.02));
+  border: 1px solid rgba(101,194,255,.16);
+  font-size: 13px;
+  line-height: 1.65;
+  color: #dce8fb;
+}
+.sidebar-admin-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(216,255,71,.22);
+  background: rgba(216,255,71,.06);
+  color: #d8ff47;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-admin-btn:hover { background: rgba(216,255,71,.12); }
+
+/* Mobile top bar */
+.mobile-top {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px;
+  background: rgba(8,12,18,.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--stroke);
+  gap: 10px;
+  align-items: center;
+}
+.mobile-menu-btn {
+  padding: 10px 12px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.mobile-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 45;
+}
+.mobile-sidebar-overlay.open { display: block; }
+.sidebar.mobile-open {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 50;
+  display: block !important;
+}
+
+@media (max-width: 1024px) {
+  .sidebar { display: none; }
+  .mobile-top { display: flex; }
+}
+`;
+
+const NAV_ITEMS = [
+  { id: 'home', label: 'Главная', icon: '🏠' },
+  { id: 'product', label: 'Продукт', icon: '🏋️' },
+  { id: 'sales', label: 'Этапы консультации', icon: '💬' },
+  { id: 'crm', label: 'CRM обучение', icon: '📊' },
+  { id: 'objections', label: 'Работа с возражениями', icon: '🎯' },
+  { id: 'materials', label: 'Материалы', icon: '📁' },
+];
+
+function Sidebar({ activePage, onNavigate, onSearch, searchValue, company, customPages, onOpenAdmin }) {
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const handleNav = (id) => {
+    onNavigate(id);
+    setMobileOpen(false);
+  };
+
+  const sidebarContent = (
+    <aside className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
+      <style>{styles}</style>
+      <div className="brand-box">
+        <div className="brand">
+          {company.name.split(' ').map((w, i) =>
+            i === 1 ? <span key={i} className="brand-accent"> {w}</span> : w
+          )}
+        </div>
+        <div className="subbrand">{company.description}</div>
+      </div>
+
+      <div className="sidebar-search-wrap">
+        <span className="search-icon">⌕</span>
+        <input
+          className="sidebar-search"
+          placeholder="Поиск по базе знаний..."
+          value={searchValue}
+          onChange={e => onSearch(e.target.value)}
+        />
+      </div>
+
+      <div className="nav-title">Основные разделы</div>
+      <div className="nav-group">
+        {NAV_ITEMS.map(item => (
+          <button
+            key={item.id}
+            className={`nav-item${activePage === item.id ? ' active' : ''}`}
+            onClick={() => handleNav(item.id)}
+          >
+            <span className="nav-item-icon">{item.icon}</span>
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      {(customPages || []).length > 0 && (
+        <>
+          <div className="nav-title" style={{ marginTop: 14 }}>Мои разделы</div>
+          <div className="nav-group">
+            {(customPages || []).map(page => (
+              <button
+                key={page.id}
+                className={`nav-item${activePage === page.id ? ' active' : ''}`}
+                onClick={() => handleNav(page.id)}
+              >
+                <span className="nav-item-icon">{page.icon || '📄'}</span>
+                {page.title}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      <button className="sidebar-admin-btn" onClick={onOpenAdmin}>
+        ⚙️ Админ-панель
+      </button>
+    </aside>
+  );
+
+  return (
+    <>
+      {sidebarContent}
+      {/* Mobile top bar */}
+      <div className="mobile-top" style={{ position: 'sticky', top: 0, zIndex: 50, padding: 12, background: 'rgba(8,12,18,.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--stroke)', display: 'none', gap: 10, alignItems: 'center' }}
+        ref={el => { if (el) el.style.display = 'flex'; }}
+      >
+        <style>{`.mobile-top{display:flex!important}`}</style>
+        <button className="mobile-menu-btn" onClick={() => setMobileOpen(true)}>☰</button>
+        <div className="sidebar-search-wrap" style={{ flex: 1, margin: 0 }}>
+          <span className="search-icon">⌕</span>
+          <input
+            className="sidebar-search"
+            placeholder="Поиск..."
+            value={searchValue}
+            onChange={e => onSearch(e.target.value)}
+          />
+        </div>
+      </div>
+      {mobileOpen && (
+        <div className="mobile-sidebar-overlay open" onClick={() => setMobileOpen(false)} />
+      )}
+    </>
+  );
+}
+
+
+
+/* ─── AUTH ───────────────────────────────────────────────────── */
+const CREDS_KEY   = 'uf_admin_creds';
+const SESSION_KEY = 'uf_admin_session';
+const DEFAULT_CREDS = { login: 'admin', password: 'uf2024' };
+const getCreds    = () => { try { return JSON.parse(localStorage.getItem(CREDS_KEY)) || DEFAULT_CREDS; } catch { return DEFAULT_CREDS; } };
+const saveCreds   = c  => localStorage.setItem(CREDS_KEY, JSON.stringify(c));
+const hasSession  = () => { try { const s = JSON.parse(localStorage.getItem(SESSION_KEY)); return s && Date.now() < s.exp; } catch { return false; } };
+const openSession  = () => localStorage.setItem(SESSION_KEY, JSON.stringify({ exp: Date.now() + 30*24*3600_000 }));
+const closeSession = () => localStorage.removeItem(SESSION_KEY);
+
+/* ─── CONSTANTS ──────────────────────────────────────────────── */
+const FONTS = [
+  { label:'Inter (по умолчанию)', value:'Inter, Arial, Helvetica, sans-serif' },
+  { label:'Manrope',  value:'Manrope, sans-serif' },
+  { label:'DM Sans',  value:'DM Sans, sans-serif' },
+  { label:'Nunito',   value:'Nunito, sans-serif' },
+  { label:'Rubik',    value:'Rubik, sans-serif' },
+];
+const COLOR_KEYS = [
+  {key:'bg',label:'Фон глубокий'},{key:'bg2',label:'Фон средний'},
+  {key:'surface',label:'Поверхность 1'},{key:'surface2',label:'Поверхность 2'},
+  {key:'stroke',label:'Обводка'},{key:'text',label:'Основной текст'},
+  {key:'muted',label:'Приглушённый'},{key:'accent',label:'Акцент'},
+  {key:'accent2',label:'Акцент 2'},{key:'ok',label:'Успех'},
+  {key:'warn',label:'Предупреждение'},{key:'danger',label:'Опасность'},{key:'gold',label:'Золотой'},
+];
+const PRESETS = [
+  { label:'🌑 Тёмный',     p:{bg:'#070a10',bg2:'#0d121b',surface:'#121928',surface2:'#182132',stroke:'#273146',text:'#eef4fb',muted:'#97a3b7',accent:'#d8ff47',accent2:'#65c2ff',ok:'#22c55e',warn:'#f59e0b',danger:'#ef4444',gold:'#d3b05d'} },
+  { label:'🔴 Красный',    p:{bg:'#0f0809',bg2:'#160c0d',surface:'#1c1011',surface2:'#221517',stroke:'#3a2122',text:'#faf4f4',muted:'#a89090',accent:'#ff4444',accent2:'#ff8888',ok:'#22c55e',warn:'#f59e0b',danger:'#ef4444',gold:'#d3b05d'} },
+  { label:'🔵 Синий',      p:{bg:'#070a14',bg2:'#0a0f1e',surface:'#0f1428',surface2:'#141b32',stroke:'#1e2b4a',text:'#eef4fb',muted:'#7a90b8',accent:'#4d9fff',accent2:'#a8d4ff',ok:'#22c55e',warn:'#f59e0b',danger:'#ef4444',gold:'#d3b05d'} },
+  { label:'💜 Фиолетовый', p:{bg:'#0a0710',bg2:'#110d1a',surface:'#161220',surface2:'#1e1829',stroke:'#2e2440',text:'#f0eeff',muted:'#9a8fb8',accent:'#b47fff',accent2:'#e0c4ff',ok:'#22c55e',warn:'#f59e0b',danger:'#ef4444',gold:'#d3b05d'} },
+];
+const BLOCK_TYPES = [
+  { type:'hero',    label:'🌟 Герой',         desc:'Большой баннер с заголовком и текстом' },
+  { type:'text',    label:'📝 Текст',          desc:'Карточка с заголовком и произвольным текстом' },
+  { type:'cards',   label:'🃏 Карточки',       desc:'Сетка карточек (2 или 3 колонки)' },
+  { type:'list',    label:'📋 Список',         desc:'Список с иконками (чекбокс, нумерация, стрелки)' },
+  { type:'table',   label:'📊 Таблица',        desc:'Таблица с заголовками и строками' },
+  { type:'steps',   label:'🔢 Шаги',           desc:'Пронумерованные шаги / этапы' },
+  { type:'alert',   label:'⚠️ Уведомление',   desc:'Цветной блок-предупреждение' },
+  { type:'divider', label:'➖ Разделитель',    desc:'Горизонтальная линия с текстом' },
+  { type:'stats',   label:'📈 Статистика',     desc:'Сетка числовых показателей' },
+  { type:'links',   label:'🔗 Ссылки',         desc:'Список кликабельных ссылок / файлов' },
+  { type:'twoCol',  label:'⬛⬛ Два столбца',  desc:'Два текстовых блока рядом' },
+];
+
+const uid = () => `b_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+
+function makeBlock(type) {
+  const base = { id: uid(), type };
+  switch(type) {
+    case 'hero':    return {...base, eyebrow:'РАЗДЕЛ', icon:'🏢', title:'Заголовок раздела', text:'Описание раздела. Редактируй в Админ-панели.', colorFrom:'rgba(216,255,71,.08)', colorTo:'rgba(101,194,255,.06)'};
+    case 'text':    return {...base, icon:'📌', title:'Заголовок блока', content:'Введи текст здесь. Поддерживаются переносы строк.'};
+    case 'cards':   return {...base, title:'Карточки', columns:2, items:[{icon:'✅',title:'Пункт 1',text:'Описание первого пункта.'},{icon:'💡',title:'Пункт 2',text:'Описание второго пункта.'}]};
+    case 'list':    return {...base, icon:'📋', title:'Список', style:'check', items:['Первый пункт','Второй пункт','Третий пункт']};
+    case 'table':   return {...base, icon:'📊', title:'Таблица', headers:['Колонка 1','Колонка 2','Колонка 3'], rows:[['Ячейка A1','Ячейка A2','Ячейка A3'],['Ячейка B1','Ячейка B2','Ячейка B3']]};
+    case 'steps':   return {...base, title:'Шаги', items:[{num:1,title:'Первый шаг',text:'Описание шага.'},{num:2,title:'Второй шаг',text:'Описание шага.'}]};
+    case 'alert':   return {...base, variant:'info', icon:'ℹ️', title:'Заголовок уведомления', text:'Текст уведомления.'};
+    case 'divider': return {...base, label:'Раздел'};
+    case 'stats':   return {...base, title:'Показатели', items:[{value:'100%',label:'Метрика 1'},{value:'50+',label:'Метрика 2'},{value:'24/7',label:'Метрика 3'}]};
+    case 'links':   return {...base, icon:'🔗', title:'Ссылки', items:[{icon:'📄',title:'Название файла / ссылки',desc:'Описание',url:'#'}]};
+    case 'twoCol':  return {...base, columns:[{icon:'💡',title:'Левый блок',text:'Текст левой колонки.'},{icon:'🔥',title:'Правый блок',text:'Текст правой колонки.'}]};
+    default:        return base;
+  }
+}
+
+/* ─── CSS ────────────────────────────────────────────────────── */
+const css = `
+.ap-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9000;display:flex;align-items:flex-start;justify-content:flex-end;backdrop-filter:blur(6px);animation:apFI .18s ease}
+@keyframes apFI{from{opacity:0}to{opacity:1}}
+@keyframes apSL{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes apPP{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+
+/* Login */
+.ap-login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9100}
+.ap-login{width:min(92vw,380px);background:#0c1118;border:1px solid #273146;border-radius:24px;padding:32px 28px;box-shadow:0 32px 80px rgba(0,0,0,.7);animation:apPP .22s ease}
+.ap-login-logo{font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#d8ff47;margin-bottom:6px}
+.ap-login-title{font-size:22px;font-weight:1000;color:#eef4fb;margin-bottom:4px}
+.ap-login-sub{font-size:13px;color:#97a3b7;margin-bottom:22px;line-height:1.55}
+.ap-login-lbl{display:block;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#6a7890;margin-bottom:7px}
+.ap-login-inp{width:100%;padding:13px 14px;border-radius:13px;border:1px solid #273146;background:#121928;color:#eef4fb;outline:none;font-size:14px;transition:.14s;font-family:inherit}
+.ap-login-inp:focus{border-color:rgba(216,255,71,.4);box-shadow:0 0 0 3px rgba(216,255,71,.07)}
+.ap-login-inp.err{border-color:rgba(239,68,68,.5)}
+.ap-login-err{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:11px;margin-bottom:14px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#f87171;font-size:13px;font-weight:700}
+.ap-login-btn{width:100%;padding:14px;border-radius:13px;border:none;background:#d8ff47;color:#0a0d12;font-size:14px;font-weight:900;cursor:pointer;transition:.14s;font-family:inherit}
+.ap-login-btn:hover{background:#c8ef36}
+.ap-login-btn:disabled{opacity:.6;cursor:not-allowed}
+.ap-cancel{width:100%;padding:11px;margin-top:10px;border-radius:13px;border:1px solid #273146;background:transparent;color:#97a3b7;font-size:13px;font-weight:700;cursor:pointer;transition:.14s;font-family:inherit}
+.ap-cancel:hover{color:#eef4fb;border-color:#3a4660}
+.ap-hint{margin-top:16px;padding:10px 13px;border-radius:10px;background:rgba(216,255,71,.05);border:1px solid rgba(216,255,71,.1);font-size:12px;color:#8a9aaa;line-height:1.6}
+.ap-hint code{color:#d8ff47;background:rgba(216,255,71,.08);padding:1px 5px;border-radius:4px}
+
+/* Panel */
+.ap-panel{width:min(94vw,900px);height:100vh;background:#080c14;border-left:1px solid #1e2b3a;display:flex;flex-direction:column;overflow:hidden;animation:apSL .22s ease}
+.ap-head{padding:14px 18px;border-bottom:1px solid #1e2b3a;display:flex;align-items:center;justify-content:space-between;background:rgba(6,9,16,.97);flex-shrink:0;gap:10px}
+.ap-head-l{display:flex;align-items:center;gap:9px}
+.ap-head-title{font-size:16px;font-weight:1000;color:#eef4fb}
+.ap-head-title em{color:#d8ff47;font-style:normal}
+.ap-user-badge{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(216,255,71,.07);border:1px solid rgba(216,255,71,.14);font-size:11px;font-weight:800;color:#c8ef80}
+.ap-head-r{display:flex;align-items:center;gap:6px}
+.ap-saved{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#4ade80;font-size:11px;font-weight:800;animation:apFI .2s ease}
+.ap-ico-btn{width:30px;height:30px;border-radius:8px;border:1px solid #273146;background:#121928;color:#97a3b7;cursor:pointer;font-size:14px;display:grid;place-items:center;transition:.13s}
+.ap-ico-btn:hover{background:#1a2435;color:#eef4fb}
+
+/* Tabs */
+.ap-tabs{display:flex;gap:0;padding:0 12px;border-bottom:1px solid #1e2b3a;background:rgba(6,9,16,.7);flex-shrink:0;overflow-x:auto}
+.ap-tab{padding:11px 13px;border:none;background:none;color:#6a7890;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:.13s;white-space:nowrap;flex-shrink:0;font-family:inherit}
+.ap-tab:hover{color:#c8d8f0}
+.ap-tab.on{color:#d8ff47;border-bottom-color:#d8ff47}
+
+/* Body */
+.ap-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:18px 18px 32px}
+.ap-sec{font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#6a7890;margin:20px 0 11px;display:flex;align-items:center;gap:8px}
+.ap-sec:first-child{margin-top:0}
+.ap-sec::after{content:'';flex:1;height:1px;background:#1e2b3a}
+.ap-f{margin-bottom:11px}
+.ap-lbl{display:block;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6a7890;margin-bottom:5px}
+.ap-in,.ap-ta,.ap-sel{width:100%;padding:9px 11px;border-radius:10px;border:1px solid #1e2b3a;background:#0e1520;color:#eef4fb;outline:none;font-size:13px;transition:.13s;font-family:inherit;box-sizing:border-box}
+.ap-in:focus,.ap-ta:focus,.ap-sel:focus{border-color:rgba(216,255,71,.35);box-shadow:0 0 0 3px rgba(216,255,71,.06)}
+.ap-ta{resize:vertical;min-height:64px}
+.ap-sel option{background:#0e1520}
+.ap-2col{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ap-3col{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+
+/* Buttons */
+.ap-btn{padding:8px 14px;border-radius:9px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.13s;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+.ap-btn-accent{background:#d8ff47;color:#0a0d12}.ap-btn-accent:hover{background:#c8ef36}
+.ap-btn-sec{background:#0e1520;border:1px solid #1e2b3a;color:#eef4fb}.ap-btn-sec:hover{background:#172030}
+.ap-btn-red{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171}.ap-btn-red:hover{background:rgba(239,68,68,.18)}
+.ap-btn-green{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#4ade80}.ap-btn-green:hover{background:rgba(34,197,94,.18)}
+.ap-btn-blue{background:rgba(101,194,255,.1);border:1px solid rgba(101,194,255,.2);color:#7ec7ff}.ap-btn-blue:hover{background:rgba(101,194,255,.18)}
+.ap-btn:disabled{opacity:.5;cursor:not-allowed}
+.ap-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+
+/* Color picker */
+.ap-color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px}
+.ap-color-wrap{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;border:1px solid #1e2b3a;background:#0e1520}
+.ap-swatch{width:24px;height:24px;border-radius:6px;border:none;cursor:pointer;padding:0;background:none;flex-shrink:0}
+.ap-hex{flex:1;background:none;border:none;color:#eef4fb;font-size:12px;outline:none;font-family:'JetBrains Mono','Fira Code',monospace;min-width:0}
+
+/* List rows */
+.ap-li{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:9px;border:1px solid #1e2b3a;background:#0e1520;margin-bottom:5px}
+.ap-li input{flex:1;background:none;border:none;color:#eef4fb;font-size:13px;outline:none;font-family:inherit;min-width:0}
+.ap-li-del{width:22px;height:22px;border-radius:6px;border:1px solid rgba(239,68,68,.18);background:rgba(239,68,68,.07);color:#f87171;cursor:pointer;font-size:11px;display:grid;place-items:center;flex-shrink:0;transition:.13s}
+.ap-li-del:hover{background:rgba(239,68,68,.16)}
+.ap-add-row{width:100%;padding:8px;border-radius:9px;border:1px dashed #1e2b3a;background:none;color:#6a7890;font-size:12px;font-weight:700;cursor:pointer;transition:.13s;font-family:inherit;margin-top:4px;box-sizing:border-box}
+.ap-add-row:hover{border-color:rgba(216,255,71,.3);color:#d8ff47}
+
+/* Accordion card */
+.ap-card{border-radius:12px;border:1px solid #1e2b3a;background:#0e1520;margin-bottom:8px;overflow:hidden}
+.ap-card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;user-select:none;transition:.13s}
+.ap-card-head:hover{background:#131d2a}
+.ap-card-head-l{display:flex;align-items:center;gap:8px;min-width:0}
+.ap-card-title{font-size:13px;font-weight:800;color:#e8f0fc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ap-cat-tag{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:#162030;color:#6a8aaa;letter-spacing:.07em;text-transform:uppercase;flex-shrink:0}
+.ap-card-body{padding:0 14px 14px;animation:apFI .15s ease}
+.ap-step{padding:9px;border-radius:9px;border:1px solid #162030;background:#0a1018;margin-bottom:6px}
+.ap-step-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.ap-step-lbl{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:rgba(216,255,71,.07);border:1px solid rgba(216,255,71,.14);color:#d8ff47;font-size:11px;font-weight:900}
+.ap-dline{display:flex;align-items:flex-start;gap:5px;margin-bottom:5px}
+.ap-role-sel{width:44px;padding:4px 5px;border-radius:6px;border:1px solid #1e2b3a;background:#0a1018;font-size:11px;font-weight:900;cursor:pointer;outline:none;transition:.13s;font-family:inherit}
+.ap-role-sel.client{color:#98a2b3}.ap-role-sel.manager{color:#7ec7ff}
+
+/* Pages tab */
+.ap-page-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.ap-page-row{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:12px;border:1px solid #1e2b3a;background:#0e1520;transition:.13s;cursor:pointer}
+.ap-page-row:hover{background:#131d2a;border-color:#2e3f55}
+.ap-page-row.selected{border-color:rgba(216,255,71,.3);background:rgba(216,255,71,.05)}
+.ap-page-row-icon{font-size:20px;flex-shrink:0}
+.ap-page-row-info{flex:1;min-width:0}
+.ap-page-row-title{font-size:13px;font-weight:800;color:#eef4fb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ap-page-row-desc{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.ap-page-row-count{font-size:11px;color:#6a7890;flex-shrink:0;padding:2px 7px;background:#162030;border-radius:6px}
+.ap-page-row-actions{display:flex;gap:5px;flex-shrink:0}
+
+/* Block editor */
+.ap-block-list{display:flex;flex-direction:column;gap:6px}
+.ap-block-row{border-radius:10px;border:1px solid #1e2b3a;background:#0e1520;overflow:hidden}
+.ap-block-row-head{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none;transition:.13s}
+.ap-block-row-head:hover{background:#131d2a}
+.ap-block-type-icon{font-size:16px;flex-shrink:0}
+.ap-block-type-label{font-size:12px;font-weight:800;color:#eef4fb;flex:1}
+.ap-block-row-actions{display:flex;gap:4px;flex-shrink:0}
+.ap-move-btn{width:22px;height:22px;border-radius:5px;border:1px solid #273146;background:#0a1018;color:#97a3b7;cursor:pointer;font-size:11px;display:grid;place-items:center;transition:.12s}
+.ap-move-btn:hover{background:#1e2a3a;color:#eef4fb}
+.ap-block-body{padding:0 12px 12px;animation:apFI .15s ease}
+
+/* Block picker */
+.ap-block-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px;margin-top:12px}
+.ap-bp-item{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:11px;border:1px solid #1e2b3a;background:#0e1520;cursor:pointer;transition:.13s;text-align:left}
+.ap-bp-item:hover{border-color:rgba(216,255,71,.3);background:rgba(216,255,71,.04)}
+.ap-bp-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.ap-bp-label{font-size:13px;font-weight:800;color:#eef4fb;margin-bottom:2px}
+.ap-bp-desc{font-size:11px;color:var(--muted);line-height:1.45}
+
+/* Info */
+.ap-info{padding:12px 14px;border-radius:11px;border:1px solid #1e2b3a;background:#0e1520;font-size:13px;color:#97a3b7;line-height:1.7;margin-bottom:11px}
+.ap-info code{background:#0a1018;padding:1px 5px;border-radius:4px;color:#d8ff47;font-size:11px}
+.ap-flash{padding:9px 12px;border-radius:9px;margin-bottom:11px;font-size:13px;font-weight:700;animation:apFI .2s ease}
+.ap-flash.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.22);color:#4ade80}
+.ap-flash.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#f87171}
+.ap-pwd-box{padding:14px;border-radius:12px;border:1px solid #1e2b3a;background:#0e1520;margin-bottom:11px}
+.ap-pwd-box-title{font-size:13px;font-weight:800;color:#e8f0fc;margin-bottom:12px}
+.ap-eye-wrap{position:relative}
+.ap-eye-wrap .ap-in{padding-right:38px}
+.ap-eye-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;color:#6a7890}
+`;
+
+/* ─── LOGIN ──────────────────────────────────────────────────── */
+function LoginScreen({ onSuccess, onClose }) {
+  const [login,   setLogin]   = useState('');
+  const [pwd,     setPwd]     = useState('');
+  const [showPwd, setShow]    = useState(false);
+  const [error,   setError]   = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const submit = e => {
+    e.preventDefault(); setLoading(true); setError('');
+    setTimeout(() => {
+      const c = getCreds();
+      if (login.trim() === c.login && pwd === c.password) { openSession(); onSuccess(); }
+      else setError('Неверный логин или пароль');
+      setLoading(false);
+    }, 380);
+  };
+
+  return (
+    <div className="ap-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <style>{css}</style>
+      <div className="ap-login-wrap">
+        <div className="ap-login">
+          <div className="ap-login-logo">Underground Fitness Academy</div>
+          <div className="ap-login-title">Панель администратора</div>
+          <div className="ap-login-sub">Введите логин и пароль для редактирования.</div>
+          {error && <div className="ap-login-err">⚠ {error}</div>}
+          <form onSubmit={submit}>
+            <div className="ap-f">
+              <label className="ap-login-lbl">Логин</label>
+              <input className={`ap-login-inp${error?' err':''}`} type="text" placeholder="admin"
+                value={login} onChange={e=>{setLogin(e.target.value);setError('');}} autoFocus autoComplete="username" />
+            </div>
+            <div className="ap-f" style={{position:'relative'}}>
+              <label className="ap-login-lbl">Пароль</label>
+              <div className="ap-eye-wrap">
+                <input className={`ap-login-inp${error?' err':''}`} type={showPwd?'text':'password'} placeholder="••••••••"
+                  value={pwd} onChange={e=>{setPwd(e.target.value);setError('');}} autoComplete="current-password" />
+                <button type="button" className="ap-eye-btn" onClick={()=>setShow(v=>!v)}>{showPwd?'🙈':'👁'}</button>
+              </div>
+            </div>
+            <button className="ap-login-btn" type="submit" disabled={loading||!login||!pwd}>
+              {loading ? '⏳ Проверка…' : '🔓 Войти'}
+            </button>
+          </form>
+          <button className="ap-cancel" onClick={onClose}>Отмена</button>
+          <div className="ap-hint">По умолчанию: логин <code>admin</code>, пароль <code>uf2024</code></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── MAIN PANEL ─────────────────────────────────────────────── */
+function AdminPanel({ data, onUpdate, onReset, onExport, onImport, onClose, onNavigate }) {
+  const [authed,  setAuthed]  = useState(() => hasSession());
+  const [tab,     setTab]     = useState('pages');
+  const [saved,   setSaved]   = useState(false);
+  const [expObj,  setExpObj]  = useState(null);
+
+  const save = useCallback((path, val) => {
+    onUpdate(path, val);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }, [onUpdate]);
+
+  const logout = () => { closeSession(); setAuthed(false); };
+
+  const handleImport = e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => { if (onImport(ev.target.result)) { setSaved(true); setTimeout(()=>setSaved(false),2000); } };
+    r.readAsText(f);
+  };
+
+  if (!authed) return <LoginScreen onSuccess={()=>setAuthed(true)} onClose={onClose} />;
+
+  const TABS = [
+    {id:'pages',   label:'📄 Страницы'},
+    {id:'theme',   label:'🎨 Тема'},
+    {id:'company', label:'🏢 Компания'},
+    {id:'obj',     label:'🎯 Возражения'},
+    {id:'sales',   label:'💬 Продажи'},
+    {id:'crm',     label:'📊 CRM'},
+    {id:'access',  label:'🔑 Доступ'},
+    {id:'data',    label:'💾 Данные'},
+  ];
+
+  return (
+    <div className="ap-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <style>{css}</style>
+      <div className="ap-panel">
+        <div className="ap-head">
+          <div className="ap-head-l">
+            <span className="ap-head-title">⚙️ <em>Админ</em>-панель</span>
+            <span className="ap-user-badge">👤 {getCreds().login}</span>
+          </div>
+          <div className="ap-head-r">
+            {saved && <span className="ap-saved">✓ Сохранено</span>}
+            <button className="ap-ico-btn" title="Выйти" onClick={logout}>🚪</button>
+            <button className="ap-ico-btn" title="Закрыть" onClick={onClose}>✕</button>
+          </div>
+        </div>
+        <div className="ap-tabs">
+          {TABS.map(t => (
+            <button key={t.id} className={`ap-tab${tab===t.id?' on':''}`} onClick={()=>setTab(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="ap-body">
+          {tab==='pages'   && <PagesTab    data={data} save={save} onNavigate={onNavigate} onClose={onClose} />}
+          {tab==='theme'   && <ThemeTab    data={data} save={save} />}
+          {tab==='company' && <CompanyTab  data={data} save={save} />}
+          {tab==='obj'     && <ObjTab      data={data} save={save} expObj={expObj} setExpObj={setExpObj} />}
+          {tab==='sales'   && <SalesTab    data={data} save={save} />}
+          {tab==='crm'     && <CrmTab      data={data} save={save} />}
+          {tab==='access'  && <AccessTab   logout={logout} />}
+          {tab==='data'    && <DataTab     data={data} onReset={onReset} onExport={onExport} onImport={handleImport} />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGES TAB  — full page builder
+══════════════════════════════════════════════════════════════ */
+function PagesTab({ data, save, onNavigate, onClose }) {
+  const pages = data.customPages || [];
+  const [selectedId, setSelectedId] = useState(null);
+  const [showPicker,  setShowPicker] = useState(false);
+  const [expandedBlock, setExpandedBlock] = useState(null);
+
+  const selected = pages.find(p => p.id === selectedId);
+
+  const updPages = newPages => save(['customPages'], newPages);
+
+  const addPage = () => {
+    const p = {
+      id: `page_${Date.now()}`,
+      icon: '📄',
+      title: 'Новая страница',
+      eyebrow: 'МОЙ РАЗДЕЛ',
+      description: 'Описание страницы',
+      keywords: '',
+      blocks: [],
+    };
+    updPages([...pages, p]);
+    setSelectedId(p.id);
+    setExpandedBlock(null);
+  };
+
+  const deletePage = id => {
+    updPages(pages.filter(p => p.id !== id));
+    if (selectedId === id) setSelectedId(null);
+  };
+
+  const updatePage = (id, field, val) => {
+    updPages(pages.map(p => p.id === id ? {...p, [field]: val} : p));
+  };
+
+  const addBlock = type => {
+    const block = makeBlock(type);
+    const newPages = pages.map(p => p.id === selectedId
+      ? {...p, blocks: [...(p.blocks || []), block]}
+      : p
+    );
+    updPages(newPages);
+    setExpandedBlock(block.id);
+    setShowPicker(false);
+  };
+
+  const deleteBlock = bid => {
+    updPages(pages.map(p => p.id === selectedId
+      ? {...p, blocks: (p.blocks || []).filter(b => b.id !== bid)}
+      : p
+    ));
+    if (expandedBlock === bid) setExpandedBlock(null);
+  };
+
+  const updateBlock = (bid, newBlock) => {
+    updPages(pages.map(p => p.id === selectedId
+      ? {...p, blocks: (p.blocks || []).map(b => b.id === bid ? newBlock : b)}
+      : p
+    ));
+  };
+
+  const moveBlock = (bid, dir) => {
+    const blocks = [...(selected?.blocks || [])];
+    const idx = blocks.findIndex(b => b.id === bid);
+    if (dir === 'up' && idx > 0) { [blocks[idx-1], blocks[idx]] = [blocks[idx], blocks[idx-1]]; }
+    else if (dir === 'down' && idx < blocks.length-1) { [blocks[idx], blocks[idx+1]] = [blocks[idx+1], blocks[idx]]; }
+    else return;
+    updPages(pages.map(p => p.id === selectedId ? {...p, blocks} : p));
+  };
+
+  const dupPage = p => {
+    const n = {...JSON.parse(JSON.stringify(p)), id:`page_${Date.now()}`, title: p.title+' (копия)'};
+    n.blocks = n.blocks.map(b => ({...b, id: uid()}));
+    updPages([...pages, n]);
+    setSelectedId(n.id);
+  };
+
+  // Page list view
+  if (!selected) {
+    return (
+      <>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+          <span className="ap-sec" style={{margin:0,flex:1}}>Мои страницы ({pages.length})</span>
+          <button className="ap-btn ap-btn-accent" onClick={addPage}>+ Создать страницу</button>
+        </div>
+
+        {pages.length === 0 && (
+          <div className="ap-info" style={{textAlign:'center',padding:'28px 16px'}}>
+            <div style={{fontSize:36,marginBottom:10}}>📄</div>
+            <div style={{fontSize:14,fontWeight:800,color:'#e8f0fc',marginBottom:6}}>Страниц пока нет</div>
+            <div>Нажми «+ Создать страницу» чтобы добавить свой раздел.<br/>Можно создать любое количество страниц: филиалы, скрипты, FAQ и т.д.</div>
+          </div>
+        )}
+
+        <div className="ap-page-list">
+          {pages.map(p => (
+            <div key={p.id} className="ap-page-row" onClick={()=>setSelectedId(p.id)}>
+              <div className="ap-page-row-icon">{p.icon || '📄'}</div>
+              <div className="ap-page-row-info">
+                <div className="ap-page-row-title">{p.title}</div>
+                {p.description && <div className="ap-page-row-desc">{p.description}</div>}
+              </div>
+              <div className="ap-page-row-count">{(p.blocks||[]).length} блоков</div>
+              <div className="ap-page-row-actions" onClick={e=>e.stopPropagation()}>
+                <button className="ap-btn ap-btn-blue" style={{padding:'4px 9px',fontSize:11}}
+                  onClick={()=>{ onNavigate && onNavigate(p.id); onClose && onClose(); }}>
+                  👁 Смотреть
+                </button>
+                <button className="ap-btn ap-btn-sec" style={{padding:'4px 9px',fontSize:11}} onClick={()=>dupPage(p)}>⎘</button>
+                <button className="ap-btn ap-btn-red" style={{padding:'4px 9px',fontSize:11}}
+                  onClick={()=>{ if(window.confirm(`Удалить страницу "${p.title}"?`)) deletePage(p.id); }}>
+                  ✕
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  // Page editor view
+  const blocks = selected.blocks || [];
+  const BLOCK_TYPE_MAP = Object.fromEntries(BLOCK_TYPES.map(b => [b.type, b]));
+
+  return (
+    <>
+      {/* Back button */}
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+        <button className="ap-btn ap-btn-sec" onClick={()=>{setSelectedId(null);setExpandedBlock(null);}}>← Назад</button>
+        <span style={{color:'var(--muted)',fontSize:13}}>{selected.icon} {selected.title}</span>
+        <div style={{flex:1}}/>
+        <button className="ap-btn ap-btn-blue" style={{fontSize:12}}
+          onClick={()=>{ onNavigate && onNavigate(selected.id); onClose && onClose(); }}>
+          👁 Открыть страницу
+        </button>
+        <button className="ap-btn ap-btn-red" style={{fontSize:12}}
+          onClick={()=>{ if(window.confirm(`Удалить страницу "${selected.title}"?`)) { deletePage(selected.id); setSelectedId(null); } }}>
+          🗑 Удалить
+        </button>
+      </div>
+
+      {/* Page meta */}
+      <div className="ap-sec">Настройки страницы</div>
+      <div className="ap-2col">
+        <div className="ap-f">
+          <label className="ap-lbl">Иконка (эмодзи)</label>
+          <input className="ap-in" value={selected.icon||''} onChange={e=>updatePage(selected.id,'icon',e.target.value)} />
+        </div>
+        <div className="ap-f">
+          <label className="ap-lbl">Плашка (eyebrow)</label>
+          <input className="ap-in" value={selected.eyebrow||''} onChange={e=>updatePage(selected.id,'eyebrow',e.target.value)} />
+        </div>
+      </div>
+      <div className="ap-f">
+        <label className="ap-lbl">Название страницы (в сайдбаре)</label>
+        <input className="ap-in" value={selected.title} onChange={e=>updatePage(selected.id,'title',e.target.value)} />
+      </div>
+      <div className="ap-f">
+        <label className="ap-lbl">Описание (под заголовком)</label>
+        <textarea className="ap-ta" rows={2} value={selected.description||''} onChange={e=>updatePage(selected.id,'description',e.target.value)} />
+      </div>
+      <div className="ap-f">
+        <label className="ap-lbl">Ключевые слова для поиска</label>
+        <input className="ap-in" value={selected.keywords||''} onChange={e=>updatePage(selected.id,'keywords',e.target.value)} placeholder="филиал, адрес, контакты..." />
+      </div>
+
+      {/* Blocks */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',margin:'20px 0 11px'}}>
+        <span className="ap-sec" style={{margin:0,flex:1}}>Блоки страницы ({blocks.length})</span>
+        <button className="ap-btn ap-btn-accent" onClick={()=>setShowPicker(v=>!v)}>
+          {showPicker ? '✕ Закрыть' : '+ Добавить блок'}
+        </button>
+      </div>
+
+      {/* Block type picker */}
+      {showPicker && (
+        <div style={{marginBottom:16,padding:14,borderRadius:13,border:'1px solid #1e2b3a',background:'#0a1018'}}>
+          <div style={{fontSize:12,fontWeight:800,color:'var(--muted)',marginBottom:10,letterSpacing:'.1em',textTransform:'uppercase'}}>Выберите тип блока</div>
+          <div className="ap-block-picker">
+            {BLOCK_TYPES.map(bt => (
+              <button key={bt.type} className="ap-bp-item" onClick={()=>addBlock(bt.type)}>
+                <span className="ap-bp-icon">{bt.label.split(' ')[0]}</span>
+                <div>
+                  <div className="ap-bp-label">{bt.label.split(' ').slice(1).join(' ')}</div>
+                  <div className="ap-bp-desc">{bt.desc}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Block list */}
+      {blocks.length === 0 && !showPicker && (
+        <div className="ap-info" style={{textAlign:'center',padding:'20px 14px'}}>
+          Нет блоков. Нажми «+ Добавить блок» чтобы наполнить страницу.
+        </div>
+      )}
+
+      <div className="ap-block-list">
+        {blocks.map((block, bi) => {
+          const btInfo = BLOCK_TYPE_MAP[block.type] || {label: block.type, desc:''};
+          const isOpen = expandedBlock === block.id;
+          return (
+            <div key={block.id} className="ap-block-row">
+              <div className="ap-block-row-head" onClick={()=>setExpandedBlock(isOpen ? null : block.id)}>
+                <span className="ap-block-type-icon">{btInfo.label.split(' ')[0]}</span>
+                <span className="ap-block-type-label">
+                  {btInfo.label.split(' ').slice(1).join(' ')}
+                  {block.title ? <span style={{color:'var(--muted)',fontWeight:400,marginLeft:6}}>— {block.title}</span> : null}
+                </span>
+                <div className="ap-block-row-actions" onClick={e=>e.stopPropagation()}>
+                  <button className="ap-move-btn" title="Вверх" disabled={bi===0} onClick={()=>moveBlock(block.id,'up')}>↑</button>
+                  <button className="ap-move-btn" title="Вниз" disabled={bi===blocks.length-1} onClick={()=>moveBlock(block.id,'down')}>↓</button>
+                  <button className="ap-move-btn" style={{color:'#f87171',borderColor:'rgba(239,68,68,.2)'}} title="Удалить"
+                    onClick={()=>{ if(window.confirm('Удалить блок?')) deleteBlock(block.id); }}>✕</button>
+                </div>
+                <span style={{fontSize:11,color:'#6a7890',marginLeft:4}}>{isOpen?'▲':'▼'}</span>
+              </div>
+              {isOpen && (
+                <div className="ap-block-body">
+                  <BlockEditor block={block} onChange={nb=>updateBlock(block.id, nb)} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+/* ── BLOCK EDITORS ─────────────────────────────────────────── */
+function BlockEditor({ block, onChange }) {
+  const set = (field, val) => onChange({...block, [field]: val});
+
+  switch(block.type) {
+    case 'hero':    return <HeroEditor    block={block} set={set} onChange={onChange} />;
+    case 'text':    return <TextEditor    block={block} set={set} />;
+    case 'cards':   return <CardsEditor   block={block} set={set} onChange={onChange} />;
+    case 'list':    return <ListEditor    block={block} set={set} onChange={onChange} />;
+    case 'table':   return <TableEditor   block={block} set={set} onChange={onChange} />;
+    case 'steps':   return <StepsEditor   block={block} set={set} onChange={onChange} />;
+    case 'alert':   return <AlertEditor   block={block} set={set} />;
+    case 'divider': return <DividerEditor block={block} set={set} />;
+    case 'stats':   return <StatsEditor   block={block} set={set} onChange={onChange} />;
+    case 'links':   return <LinksEditor   block={block} set={set} onChange={onChange} />;
+    case 'twoCol':  return <TwoColEditor  block={block} set={set} onChange={onChange} />;
+    default:        return <div className="ap-info">Неизвестный тип блока: {block.type}</div>;
+  }
+}
+
+function HeroEditor({ block, set, onChange }) {
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={block.icon||''} onChange={e=>set('icon',e.target.value)} /></div>
+        <div className="ap-f"><label className="ap-lbl">Плашка eyebrow</label><input className="ap-in" value={block.eyebrow||''} onChange={e=>set('eyebrow',e.target.value)} /></div>
+      </div>
+      <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      <div className="ap-f"><label className="ap-lbl">Текст</label><textarea className="ap-ta" rows={3} value={block.text||''} onChange={e=>set('text',e.target.value)} /></div>
+      <div className="ap-2col">
+        <div className="ap-f">
+          <label className="ap-lbl">Цвет фона «от»</label>
+          <div className="ap-color-wrap">
+            <input type="color" className="ap-swatch" value={block.colorFrom?.replace(/rgba?\([^)]+\)/,'') || '#d8ff47'} onChange={e=>set('colorFrom',e.target.value+'22')} />
+            <input type="text" className="ap-hex" value={block.colorFrom||''} onChange={e=>set('colorFrom',e.target.value)} />
+          </div>
+        </div>
+        <div className="ap-f">
+          <label className="ap-lbl">Цвет фона «до»</label>
+          <div className="ap-color-wrap">
+            <input type="color" className="ap-swatch" value={block.colorTo?.replace(/rgba?\([^)]+\)/,'') || '#65c2ff'} onChange={e=>set('colorTo',e.target.value+'22')} />
+            <input type="text" className="ap-hex" value={block.colorTo||''} onChange={e=>set('colorTo',e.target.value)} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function TextEditor({ block, set }) {
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={block.icon||''} onChange={e=>set('icon',e.target.value)} /></div>
+        <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      </div>
+      <div className="ap-f"><label className="ap-lbl">Содержимое (поддерживает переносы строк)</label>
+        <textarea className="ap-ta" rows={6} value={block.content||''} onChange={e=>set('content',e.target.value)} style={{minHeight:120}} /></div>
+    </>
+  );
+}
+
+function CardsEditor({ block, set, onChange }) {
+  const items = block.items || [];
+  const updItem = (i, f, v) => set('items', items.map((x,idx)=>idx===i?{...x,[f]:v}:x));
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Заголовок группы</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+        <div className="ap-f"><label className="ap-lbl">Колонок (1-4)</label>
+          <select className="ap-sel" value={block.columns||2} onChange={e=>set('columns',Number(e.target.value))}>
+            <option value={1}>1 колонка</option><option value={2}>2 колонки</option>
+            <option value={3}>3 колонки</option><option value={4}>4 колонки</option>
+          </select>
+        </div>
+      </div>
+      {items.map((item,i) => (
+        <div key={i} className="ap-step" style={{marginBottom:8}}>
+          <div className="ap-step-head">
+            <span className="ap-step-lbl">Карточка {i+1}</span>
+            <button className="ap-btn ap-btn-red" style={{padding:'3px 8px',fontSize:11}} onClick={()=>set('items',items.filter((_,idx)=>idx!==i))}>✕</button>
+          </div>
+          <div className="ap-2col">
+            <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={item.icon||''} onChange={e=>updItem(i,'icon',e.target.value)} /></div>
+            <div className="ap-f"><label className="ap-lbl">Тег (badge)</label><input className="ap-in" value={item.badge||''} onChange={e=>updItem(i,'badge',e.target.value)} /></div>
+          </div>
+          <div className="ap-f"><label className="ap-lbl">Заголовок карточки</label><input className="ap-in" value={item.title||''} onChange={e=>updItem(i,'title',e.target.value)} /></div>
+          <div className="ap-f"><label className="ap-lbl">Текст</label><textarea className="ap-ta" rows={2} value={item.text||''} onChange={e=>updItem(i,'text',e.target.value)} /></div>
+        </div>
+      ))}
+      <button className="ap-add-row" onClick={()=>set('items',[...items,{icon:'⭐',title:'Новая карточка',text:'',badge:''}])}>+ Карточка</button>
+    </>
+  );
+}
+
+function ListEditor({ block, set, onChange }) {
+  const items = block.items || [];
+  const isObj = items.length > 0 && typeof items[0] === 'object';
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={block.icon||''} onChange={e=>set('icon',e.target.value)} /></div>
+        <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      </div>
+      <div className="ap-f"><label className="ap-lbl">Стиль</label>
+        <select className="ap-sel" value={block.style||'bullet'} onChange={e=>set('style',e.target.value)}>
+          <option value="bullet">• Буллет</option><option value="check">✓ Чекбокс</option>
+          <option value="number">1 Нумерация</option><option value="arrow">→ Стрелка</option>
+        </select>
+      </div>
+      <div className="ap-f"><label className="ap-lbl">Режим пунктов</label>
+        <select className="ap-sel" value={isObj?'rich':'simple'} onChange={e=>{
+          if(e.target.value==='rich') set('items',items.map(x=>typeof x==='string'?{title:x,text:''}:x));
+          else set('items',items.map(x=>typeof x==='object'?x.title||'':x));
+        }}>
+          <option value="simple">Простой (только текст)</option>
+          <option value="rich">Расширенный (заголовок + текст)</option>
+        </select>
+      </div>
+      {items.map((item,i)=> (
+        isObj
+          ? <div key={i} className="ap-step" style={{marginBottom:6}}>
+              <div className="ap-step-head">
+                <span className="ap-step-lbl">Пункт {i+1}</span>
+                <button className="ap-btn ap-btn-red" style={{padding:'3px 8px',fontSize:11}} onClick={()=>set('items',items.filter((_,idx)=>idx!==i))}>✕</button>
+              </div>
+              <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={item.title||''} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,title:e.target.value}:x))} /></div>
+              <div className="ap-f"><label className="ap-lbl">Описание</label><textarea className="ap-ta" rows={2} value={item.text||''} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,text:e.target.value}:x))} /></div>
+            </div>
+          : <div key={i} className="ap-li">
+              <input value={item} onChange={e=>set('items',items.map((x,idx)=>idx===i?e.target.value:x))} />
+              <button className="ap-li-del" onClick={()=>set('items',items.filter((_,idx)=>idx!==i))}>✕</button>
+            </div>
+      ))}
+      <button className="ap-add-row" onClick={()=>set('items',[...items, isObj?{title:'Новый пункт',text:''}:'Новый пункт'])}>+ Пункт</button>
+    </>
+  );
+}
+
+function TableEditor({ block, set, onChange }) {
+  const headers = block.headers || [];
+  const rows    = block.rows    || [];
+  const cols    = headers.length || 2;
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={block.icon||''} onChange={e=>set('icon',e.target.value)} /></div>
+        <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      </div>
+      <div className="ap-sec">Заголовки колонок</div>
+      <div style={{display:'flex',gap:6,marginBottom:8,flexWrap:'wrap'}}>
+        {headers.map((h,i)=>(
+          <div key={i} className="ap-li" style={{flex:'1 1 120px'}}>
+            <input value={h} onChange={e=>set('headers',headers.map((v,idx)=>idx===i?e.target.value:v))} />
+            <button className="ap-li-del" onClick={()=>{
+              set('headers',headers.filter((_,idx)=>idx!==i));
+              set('rows',rows.map(r=>Array.isArray(r)?r.filter((_,idx)=>idx!==i):[r]));
+            }}>✕</button>
+          </div>
+        ))}
+        <button className="ap-add-row" style={{flex:'0 0 auto',minWidth:100}} onClick={()=>{
+          set('headers',[...headers,'Колонка']);
+          set('rows',rows.map(r=>Array.isArray(r)?[...r,'']:['',r,'']));
+        }}>+ Колонка</button>
+      </div>
+      <div className="ap-sec">Строки</div>
+      {rows.map((row,ri)=>{
+        const cells = Array.isArray(row) ? row : [row];
+        return (
+          <div key={ri} style={{display:'flex',gap:5,marginBottom:5,alignItems:'center'}}>
+            {Array.from({length:cols}).map((_,ci)=>(
+              <input key={ci} className="ap-in" style={{flex:1,minWidth:0}} value={cells[ci]||''} onChange={e=>{
+                const nr = Array.from({length:cols},(_,idx)=>idx===ci?e.target.value:(cells[idx]||''));
+                set('rows',rows.map((v,idx)=>idx===ri?nr:v));
+              }} />
+            ))}
+            <button className="ap-li-del" onClick={()=>set('rows',rows.filter((_,idx)=>idx!==ri))}>✕</button>
+          </div>
+        );
+      })}
+      <button className="ap-add-row" onClick={()=>set('rows',[...rows,Array(cols).fill('')])}>+ Строка</button>
+    </>
+  );
+}
+
+function StepsEditor({ block, set, onChange }) {
+  const items = block.items || [];
+  return (
+    <>
+      <div className="ap-f"><label className="ap-lbl">Заголовок группы</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      {items.map((step,i)=>(
+        <div key={i} className="ap-step" style={{marginBottom:7}}>
+          <div className="ap-step-head">
+            <span className="ap-step-lbl">Шаг {step.num||i+1}</span>
+            <button className="ap-btn ap-btn-red" style={{padding:'3px 8px',fontSize:11}} onClick={()=>set('items',items.filter((_,idx)=>idx!==i))}>✕</button>
+          </div>
+          <div className="ap-2col">
+            <div className="ap-f"><label className="ap-lbl">Номер</label><input className="ap-in" value={step.num||i+1} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,num:e.target.value}:x))} /></div>
+            <div className="ap-f"><label className="ap-lbl">Заголовок шага</label><input className="ap-in" value={step.title||''} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,title:e.target.value}:x))} /></div>
+          </div>
+          <div className="ap-f"><label className="ap-lbl">Описание</label><textarea className="ap-ta" rows={2} value={step.text||''} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,text:e.target.value}:x))} /></div>
+        </div>
+      ))}
+      <button className="ap-add-row" onClick={()=>set('items',[...items,{num:items.length+1,title:'Новый шаг',text:''}])}>+ Шаг</button>
+    </>
+  );
+}
+
+function AlertEditor({ block, set }) {
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Тип</label>
+          <select className="ap-sel" value={block.variant||'info'} onChange={e=>set('variant',e.target.value)}>
+            <option value="info">ℹ️ Инфо (синий)</option>
+            <option value="success">✅ Успех (зелёный)</option>
+            <option value="warn">⚠️ Внимание (жёлтый)</option>
+            <option value="danger">🚫 Опасность (красный)</option>
+            <option value="accent">⚡ Акцент (жёлто-зелёный)</option>
+          </select>
+        </div>
+        <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={block.icon||''} onChange={e=>set('icon',e.target.value)} /></div>
+      </div>
+      <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      <div className="ap-f"><label className="ap-lbl">Текст</label><textarea className="ap-ta" rows={3} value={block.text||''} onChange={e=>set('text',e.target.value)} /></div>
+    </>
+  );
+}
+
+function DividerEditor({ block, set }) {
+  return (
+    <div className="ap-f"><label className="ap-lbl">Текст разделителя (необязательно)</label>
+      <input className="ap-in" value={block.label||''} onChange={e=>set('label',e.target.value)} placeholder="Например: Дополнительно" /></div>
+  );
+}
+
+function StatsEditor({ block, set, onChange }) {
+  const items = block.items || [];
+  return (
+    <>
+      <div className="ap-f"><label className="ap-lbl">Заголовок группы</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      {items.map((s,i)=>(
+        <div key={i} className="ap-li">
+          <input style={{width:90,flex:'0 0 90px'}} value={s.value} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,value:e.target.value}:x))} placeholder="100%" />
+          <input style={{flex:1}} value={s.label} onChange={e=>set('items',items.map((x,idx)=>idx===i?{...x,label:e.target.value}:x))} placeholder="Подпись" />
+          <button className="ap-li-del" onClick={()=>set('items',items.filter((_,idx)=>idx!==i))}>✕</button>
+        </div>
+      ))}
+      <button className="ap-add-row" onClick={()=>set('items',[...items,{value:'—',label:'Показатель'}])}>+ Показатель</button>
+    </>
+  );
+}
+
+function LinksEditor({ block, set, onChange }) {
+  const items = block.items || [];
+  const updItem = (i,f,v)=>set('items',items.map((x,idx)=>idx===i?{...x,[f]:v}:x));
+  return (
+    <>
+      <div className="ap-2col">
+        <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={block.icon||''} onChange={e=>set('icon',e.target.value)} /></div>
+        <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={block.title||''} onChange={e=>set('title',e.target.value)} /></div>
+      </div>
+      {items.map((link,i)=>(
+        <div key={i} className="ap-step" style={{marginBottom:7}}>
+          <div className="ap-step-head">
+            <span className="ap-step-lbl">{link.icon||'🔗'} Ссылка {i+1}</span>
+            <button className="ap-btn ap-btn-red" style={{padding:'3px 8px',fontSize:11}} onClick={()=>set('items',items.filter((_,idx)=>idx!==i))}>✕</button>
+          </div>
+          <div className="ap-2col">
+            <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={link.icon||''} onChange={e=>updItem(i,'icon',e.target.value)} /></div>
+            <div className="ap-f"><label className="ap-lbl">Название</label><input className="ap-in" value={link.title||''} onChange={e=>updItem(i,'title',e.target.value)} /></div>
+          </div>
+          <div className="ap-f"><label className="ap-lbl">URL</label><input className="ap-in" value={link.url||''} onChange={e=>updItem(i,'url',e.target.value)} placeholder="https://..." /></div>
+          <div className="ap-f"><label className="ap-lbl">Описание</label><input className="ap-in" value={link.desc||''} onChange={e=>updItem(i,'desc',e.target.value)} /></div>
+        </div>
+      ))}
+      <button className="ap-add-row" onClick={()=>set('items',[...items,{icon:'📄',title:'Новая ссылка',desc:'',url:'#'}])}>+ Ссылка</button>
+    </>
+  );
+}
+
+function TwoColEditor({ block, set, onChange }) {
+  const cols = block.columns || [{icon:'',title:'',text:''},{icon:'',title:'',text:''}];
+  const updCol = (i,f,v)=>set('columns',cols.map((x,idx)=>idx===i?{...x,[f]:v}:x));
+  return (
+    <>
+      {[0,1].map(i=>(
+        <div key={i} className="ap-step" style={{marginBottom:8}}>
+          <div className="ap-step-head"><span className="ap-step-lbl">{i===0?'Левый':'Правый'} столбец</span></div>
+          <div className="ap-2col">
+            <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={cols[i]?.icon||''} onChange={e=>updCol(i,'icon',e.target.value)} /></div>
+            <div className="ap-f"><label className="ap-lbl">Заголовок</label><input className="ap-in" value={cols[i]?.title||''} onChange={e=>updCol(i,'title',e.target.value)} /></div>
+          </div>
+          <div className="ap-f"><label className="ap-lbl">Текст</label><textarea className="ap-ta" rows={4} value={cols[i]?.text||''} onChange={e=>updCol(i,'text',e.target.value)} /></div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   THEME TAB
+══════════════════════════════════════════════════════════════ */
+function ThemeTab({ data, save }) {
+  const t = data.theme;
+  return (<>
+    <div className="ap-sec">Цветовые переменные</div>
+    <div className="ap-color-grid">
+      {COLOR_KEYS.map(({key,label})=>(
+        <div key={key} className="ap-f">
+          <label className="ap-lbl">{label}</label>
+          <div className="ap-color-wrap">
+            <input type="color" className="ap-swatch" value={t[key]||'#000'} onChange={e=>save(['theme',key],e.target.value)} />
+            <input type="text" className="ap-hex" value={t[key]||''} onChange={e=>save(['theme',key],e.target.value)} />
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="ap-sec">Шрифт</div>
+    <div className="ap-f">
+      <label className="ap-lbl">Семейство</label>
+      <select className="ap-sel" value={t.fontFamily} onChange={e=>save(['theme','fontFamily'],e.target.value)}>
+        {FONTS.map(f=><option key={f.value} value={f.value}>{f.label}</option>)}
+      </select>
+    </div>
+    <div className="ap-sec">Пресеты палитры</div>
+    <div className="ap-btns">
+      {PRESETS.map(pr=>(
+        <button key={pr.label} className="ap-btn ap-btn-sec"
+          onClick={()=>Object.entries(pr.p).forEach(([k,v])=>save(['theme',k],v))}>
+          {pr.label}
+        </button>
+      ))}
+    </div>
+  </>);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COMPANY TAB
+══════════════════════════════════════════════════════════════ */
+function CompanyTab({ data, save }) {
+  const co = data.company;
+  return (<>
+    <div className="ap-sec">Основное</div>
+    <div className="ap-f"><label className="ap-lbl">Название</label><input className="ap-in" value={co.name} onChange={e=>save(['company','name'],e.target.value)} /></div>
+    <div className="ap-f"><label className="ap-lbl">Описание сайдбара</label><textarea className="ap-ta" rows={3} value={co.description} onChange={e=>save(['company','description'],e.target.value)} /></div>
+    <div className="ap-sec">Статистика</div>
+    <div className="ap-2col">
+      {co.stats.map((s,i)=>(
+        <React.Fragment key={i}>
+          <div className="ap-f"><label className="ap-lbl">Значение {i+1}</label><input className="ap-in" value={s.value} onChange={e=>save(['company','stats'],co.stats.map((x,idx)=>idx===i?{...x,value:e.target.value}:x))} /></div>
+          <div className="ap-f"><label className="ap-lbl">Подпись {i+1}</label><input className="ap-in" value={s.label} onChange={e=>save(['company','stats'],co.stats.map((x,idx)=>idx===i?{...x,label:e.target.value}:x))} /></div>
+        </React.Fragment>
+      ))}
+    </div>
+    <div className="ap-sec">Ценности</div>
+    {co.values.map((v,i)=>(
+      <div key={i} className="ap-card" style={{marginBottom:7}}>
+        <div style={{padding:'10px 12px'}}>
+          <div className="ap-f"><label className="ap-lbl">Заголовок {i+1}</label><input className="ap-in" value={v.title} onChange={e=>save(['company','values'],co.values.map((x,idx)=>idx===i?{...x,title:e.target.value}:x))} /></div>
+          <div className="ap-f"><label className="ap-lbl">Описание</label><textarea className="ap-ta" rows={2} value={v.desc} onChange={e=>save(['company','values'],co.values.map((x,idx)=>idx===i?{...x,desc:e.target.value}:x))} /></div>
+        </div>
+      </div>
+    ))}
+  </>);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   OBJECTIONS TAB
+══════════════════════════════════════════════════════════════ */
+function ObjTab({ data, save, expObj, setExpObj }) {
+  const objs = (data.objections||[]).filter(o=>!o.isRule);
+  const updObjs = list => save(['objections'],[...(data.objections||[]).filter(o=>o.isRule),...list]);
+  const addObj = ()=>{
+    const n={id:`obj_${Date.now()}`,icon:'💬',title:'Новое возражение',category:'classic',homeDesc:'Описание.',principle:'Принцип.',tip:'',
+      steps:[{label:'1',lines:[{role:'client',text:'Клиент'},{role:'manager',text:'Менеджер'}]}]};
+    updObjs([...objs,n]); setExpObj(n.id);
+  };
+  const upd=(id,f,v)=>updObjs(objs.map(o=>o.id===id?{...o,[f]:v}:o));
+  const del=id=>updObjs(objs.filter(o=>o.id!==id));
+  const addStep=id=>{const o=objs.find(x=>x.id===id);upd(id,'steps',[...(o.steps||[]),{label:String((o.steps?.length||0)+1),lines:[{role:'manager',text:''}]}]);};
+  const delStep=(id,si)=>{const o=objs.find(x=>x.id===id);upd(id,'steps',o.steps.filter((_,i)=>i!==si));};
+  const updStep=(id,si,f,v)=>{const o=objs.find(x=>x.id===id);upd(id,'steps',o.steps.map((s,i)=>i===si?{...s,[f]:v}:s));};
+  const addLine=(id,si)=>{const o=objs.find(x=>x.id===id);updStep(id,si,'lines',[...o.steps[si].lines,{role:'manager',text:''}]);};
+  const delLine=(id,si,li)=>{const o=objs.find(x=>x.id===id);updStep(id,si,'lines',o.steps[si].lines.filter((_,i)=>i!==li));};
+  const updLine=(id,si,li,f,v)=>{const o=objs.find(x=>x.id===id);updStep(id,si,'lines',o.steps[si].lines.map((l,i)=>i===li?{...l,[f]:v}:l));};
+
+  return (<>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+      <span className="ap-sec" style={{margin:0,flex:1}}>Возражения ({objs.length})</span>
+      <button className="ap-btn ap-btn-accent" onClick={addObj}>+ Добавить</button>
+    </div>
+    {objs.map(obj=>(
+      <div key={obj.id} className="ap-card">
+        <div className="ap-card-head" onClick={()=>setExpObj(expObj===obj.id?null:obj.id)}>
+          <div className="ap-card-head-l">
+            <span style={{fontSize:17}}>{obj.icon}</span>
+            <span className="ap-card-title">{obj.title}</span>
+            <span className="ap-cat-tag">{obj.category==='classic'?'Классическое':'Сложное'}</span>
+          </div>
+          <span style={{fontSize:11,color:'#6a7890'}}>{expObj===obj.id?'▲':'▼'}</span>
+        </div>
+        {expObj===obj.id&&(
+          <div className="ap-card-body">
+            <div className="ap-2col">
+              <div className="ap-f"><label className="ap-lbl">Иконка</label><input className="ap-in" value={obj.icon} onChange={e=>upd(obj.id,'icon',e.target.value)} /></div>
+              <div className="ap-f"><label className="ap-lbl">Категория</label>
+                <select className="ap-sel" value={obj.category} onChange={e=>upd(obj.id,'category',e.target.value)}>
+                  <option value="classic">Классическое</option><option value="hard">Сложное</option>
+                </select></div>
+            </div>
+            <div className="ap-f"><label className="ap-lbl">Название</label><input className="ap-in" value={obj.title} onChange={e=>upd(obj.id,'title',e.target.value)} /></div>
+            <div className="ap-f"><label className="ap-lbl">Описание для карточки</label><input className="ap-in" value={obj.homeDesc||''} onChange={e=>upd(obj.id,'homeDesc',e.target.value)} /></div>
+            <div className="ap-f"><label className="ap-lbl">Принцип</label><textarea className="ap-ta" rows={3} value={obj.principle||''} onChange={e=>upd(obj.id,'principle',e.target.value)} /></div>
+            <div className="ap-f"><label className="ap-lbl">Совет</label><textarea className="ap-ta" rows={2} value={obj.tip||''} onChange={e=>upd(obj.id,'tip',e.target.value)} /></div>
+            <div className="ap-sec" style={{marginTop:14}}>Шаги диалога</div>
+            {(obj.steps||[]).map((step,si)=>(
+              <div key={si} className="ap-step">
+                <div className="ap-step-head">
+                  <span className="ap-step-lbl">Н <strong>{step.label}</strong></span>
+                  <div style={{display:'flex',gap:5}}>
+                    <button className="ap-btn ap-btn-green" style={{padding:'2px 8px',fontSize:11}} onClick={()=>addLine(obj.id,si)}>+ реплика</button>
+                    <button className="ap-btn ap-btn-red" style={{padding:'2px 8px',fontSize:11}} onClick={()=>delStep(obj.id,si)}>✕ шаг</button>
+                  </div>
+                </div>
+                {step.lines.map((ln,li)=>(
+                  <div key={li} className="ap-dline">
+                    <select className={`ap-role-sel ${ln.role}`} value={ln.role} onChange={e=>updLine(obj.id,si,li,'role',e.target.value)}>
+                      <option value="client">К</option><option value="manager">М</option>
+                    </select>
+                    <textarea className="ap-ta" rows={2} style={{flex:1,minHeight:44}} value={ln.text} onChange={e=>updLine(obj.id,si,li,'text',e.target.value)} />
+                    <button className="ap-li-del" style={{marginTop:2}} onClick={()=>delLine(obj.id,si,li)}>✕</button>
+                  </div>
+                ))}
+              </div>
+            ))}
+            <div className="ap-btns" style={{marginTop:7}}>
+              <button className="ap-add-row" style={{flex:1,margin:0}} onClick={()=>addStep(obj.id)}>+ Шаг Н{(obj.steps?.length||0)+1}</button>
+              <button className="ap-btn ap-btn-red" onClick={()=>del(obj.id)}>🗑 Удалить</button>
+            </div>
+          </div>
+        )}
+      </div>
+    ))}
+    <button className="ap-add-row" onClick={addObj}>+ Новое возражение</button>
+  </>);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SALES TAB
+══════════════════════════════════════════════════════════════ */
+function SalesTab({ data, save }) {
+  const {stages,cases} = data.sales;
+  return (<>
+    <div className="ap-sec">Этапы консультации</div>
+    {stages.map((s,i)=>(
+      <div key={i} className="ap-card" style={{marginBottom:7}}>
+        <div style={{padding:'10px 12px'}}>
+          <div className="ap-f"><label className="ap-lbl">Этап {i+1} — заголовок</label>
+            <input className="ap-in" value={s.title} onChange={e=>save(['sales','stages'],stages.map((x,idx)=>idx===i?{...x,title:e.target.value}:x))} /></div>
+          {s.desc!==undefined&&<div className="ap-f"><label className="ap-lbl">Описание</label>
+            <textarea className="ap-ta" rows={2} value={s.desc||''} onChange={e=>save(['sales','stages'],stages.map((x,idx)=>idx===i?{...x,desc:e.target.value}:x))} /></div>}
+        </div>
+      </div>
+    ))}
+    <div className="ap-sec">Кейсы</div>
+    {cases.map((c,i)=>(
+      <div key={i} className="ap-card" style={{marginBottom:7}}>
+        <div style={{padding:'10px 12px'}}>
+          <div className="ap-2col">
+            <div className="ap-f"><label className="ap-lbl">Имя</label><input className="ap-in" value={c.name} onChange={e=>save(['sales','cases'],cases.map((x,idx)=>idx===i?{...x,name:e.target.value}:x))} /></div>
+            <div className="ap-f"><label className="ap-lbl">Тег</label><input className="ap-in" value={c.tag} onChange={e=>save(['sales','cases'],cases.map((x,idx)=>idx===i?{...x,tag:e.target.value}:x))} /></div>
+          </div>
+          <div className="ap-f"><label className="ap-lbl">Описание</label><textarea className="ap-ta" rows={3} value={c.desc} onChange={e=>save(['sales','cases'],cases.map((x,idx)=>idx===i?{...x,desc:e.target.value}:x))} /></div>
+          <div className="ap-f"><label className="ap-lbl">Результат</label><textarea className="ap-ta" rows={2} value={c.result} onChange={e=>save(['sales','cases'],cases.map((x,idx)=>idx===i?{...x,result:e.target.value}:x))} /></div>
+          <button className="ap-btn ap-btn-red" style={{fontSize:11}} onClick={()=>save(['sales','cases'],cases.filter((_,idx)=>idx!==i))}>🗑 Удалить</button>
+        </div>
+      </div>
+    ))}
+    <button className="ap-add-row" onClick={()=>save(['sales','cases'],[...cases,{name:'Новый кейс',tag:'кейс',desc:'Описание.',result:'Результат.'}])}>+ Кейс</button>
+  </>);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CRM TAB
+══════════════════════════════════════════════════════════════ */
+function CrmTab({ data, save }) {
+  const {funnel,kpis,requiredFields} = data.crm;
+  return (<>
+    <div className="ap-sec">KPI плитки</div>
+    <div className="ap-2col">
+      {kpis.map((k,i)=>(
+        <React.Fragment key={i}>
+          <div className="ap-f"><label className="ap-lbl">Значение {i+1}</label><input className="ap-in" value={k.value} onChange={e=>save(['crm','kpis'],kpis.map((x,idx)=>idx===i?{...x,value:e.target.value}:x))} /></div>
+          <div className="ap-f"><label className="ap-lbl">Подпись {i+1}</label><input className="ap-in" value={k.label} onChange={e=>save(['crm','kpis'],kpis.map((x,idx)=>idx===i?{...x,label:e.target.value}:x))} /></div>
+        </React.Fragment>
+      ))}
+    </div>
+    <div className="ap-sec">Воронка BIG</div>
+    {funnel.map((item,i)=>(
+      <div key={i} className="ap-li">
+        <input value={item} onChange={e=>save(['crm','funnel'],funnel.map((v,idx)=>idx===i?e.target.value:v))} />
+        <span style={{color:'#6a7890',fontSize:10,padding:'1px 6px',background:'#162030',borderRadius:4,flexShrink:0}}>#{i+1}</span>
+        <button className="ap-li-del" onClick={()=>save(['crm','funnel'],funnel.filter((_,idx)=>idx!==i))}>✕</button>
+      </div>
+    ))}
+    <button className="ap-add-row" onClick={()=>save(['crm','funnel'],[...funnel,'Новый этап'])}>+ Этап</button>
+    <div className="ap-sec">Обязательные поля</div>
+    {requiredFields.map((f,i)=>(
+      <div key={i} className="ap-li">
+        <input value={f} onChange={e=>save(['crm','requiredFields'],requiredFields.map((v,idx)=>idx===i?e.target.value:v))} />
+        <button className="ap-li-del" onClick={()=>save(['crm','requiredFields'],requiredFields.filter((_,idx)=>idx!==i))}>✕</button>
+      </div>
+    ))}
+    <button className="ap-add-row" onClick={()=>save(['crm','requiredFields'],[...requiredFields,'Новое поле'])}>+ Поле</button>
+  </>);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACCESS TAB
+══════════════════════════════════════════════════════════════ */
+function AccessTab({ logout }) {
+  const [curL,setCurL]=useState(''); const [curP,setCurP]=useState('');
+  const [newL,setNewL]=useState(''); const [newP,setNewP]=useState('');
+  const [conf,setConf]=useState('');
+  const [flash,setFlash]=useState(null);
+  const [show,setShow]=useState({c:false,n:false,k:false});
+  const msg=(type,text)=>{setFlash({type,text});setTimeout(()=>setFlash(null),3500);};
+  const submit=e=>{
+    e.preventDefault(); const creds=getCreds();
+    if(curL!==creds.login||curP!==creds.password){msg('err','Текущие данные неверны.');return;}
+    if(!newL.trim()){msg('err','Логин не может быть пустым.');return;}
+    if(newP.length<4){msg('err','Пароль — минимум 4 символа.');return;}
+    if(newP!==conf){msg('err','Пароли не совпадают.');return;}
+    saveCreds({login:newL.trim(),password:newP}); closeSession();
+    msg('ok','Сохранено. Выполняется выход…');
+    setCurL('');setCurP('');setNewL('');setNewP('');setConf('');
+    setTimeout(()=>logout(),1600);
+  };
+  const eye=key=>(
+    <button type="button" className="ap-eye-btn" onClick={()=>setShow(s=>({...s,[key]:!s[key]}))}>
+      {show[key]?'🙈':'👁'}
+    </button>
+  );
+  return (<>
+    <div className="ap-sec">Смена логина и пароля</div>
+    <div className="ap-info">Укажите текущие данные, затем новые. После сохранения сессия завершится.</div>
+    {flash&&<div className={`ap-flash ${flash.type}`}>{flash.type==='ok'?'✓ ':'⚠ '}{flash.text}</div>}
+    <form onSubmit={submit}>
+      <div className="ap-pwd-box">
+        <div className="ap-pwd-box-title">Текущие данные</div>
+        <div className="ap-f"><label className="ap-lbl">Логин</label><input className="ap-in" type="text" value={curL} onChange={e=>setCurL(e.target.value)} autoComplete="username" /></div>
+        <div className="ap-f"><label className="ap-lbl">Пароль</label><div className="ap-eye-wrap"><input className="ap-in" type={show.c?'text':'password'} value={curP} onChange={e=>setCurP(e.target.value)} />{eye('c')}</div></div>
+      </div>
+      <div className="ap-pwd-box">
+        <div className="ap-pwd-box-title">Новые данные</div>
+        <div className="ap-f"><label className="ap-lbl">Новый логин</label><input className="ap-in" type="text" value={newL} onChange={e=>setNewL(e.target.value)} autoComplete="new-username" /></div>
+        <div className="ap-f"><label className="ap-lbl">Новый пароль (мин. 4 символа)</label><div className="ap-eye-wrap"><input className="ap-in" type={show.n?'text':'password'} value={newP} onChange={e=>setNewP(e.target.value)} />{eye('n')}</div></div>
+        <div className="ap-f" style={{marginBottom:0}}><label className="ap-lbl">Повторите пароль</label><div className="ap-eye-wrap"><input className="ap-in" type={show.k?'text':'password'} value={conf} onChange={e=>setConf(e.target.value)} />{eye('k')}</div></div>
+      </div>
+      <button className="ap-btn ap-btn-accent" type="submit" style={{width:'100%',justifyContent:'center',padding:12}} disabled={!curL||!curP||!newL||!newP||!conf}>
+        🔐 Сохранить
+      </button>
+    </form>
+    <div className="ap-sec" style={{marginTop:22}}>Сессия</div>
+    <div className="ap-info">Сессия хранится в <code>localStorage</code> — активна 30 дней или до ручного выхода.</div>
+    <button className="ap-btn ap-btn-red" onClick={()=>{if(window.confirm('Завершить сессию?'))logout();}}>🚪 Выйти</button>
+  </>);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DATA TAB
+══════════════════════════════════════════════════════════════ */
+function DataTab({ data, onReset, onExport, onImport }) {
+  const size=(()=>{try{return(new Blob([JSON.stringify(data)]).size/1024).toFixed(1)+' KB';}catch{return'—';}})();
+  const pagesCount = (data.customPages||[]).length;
+  const blocksCount = (data.customPages||[]).reduce((s,p)=>s+(p.blocks||[]).length,0);
+  return (<>
+    <div className="ap-sec">Локальная база данных</div>
+    <div className="ap-info">
+      Хранилище: <code>localStorage</code> · Размер: <strong style={{color:'#d8ff47'}}>{size}</strong><br/>
+      Кастомных страниц: <strong style={{color:'#d8ff47'}}>{pagesCount}</strong> · Блоков: <strong style={{color:'#d8ff47'}}>{blocksCount}</strong>
+    </div>
+    <div className="ap-btns">
+      <button className="ap-btn ap-btn-accent" onClick={onExport}>📥 Экспорт JSON</button>
+      <label className="ap-btn ap-btn-sec" style={{cursor:'pointer'}}>
+        📤 Импорт JSON<input type="file" accept=".json" onChange={onImport} style={{display:'none'}} />
+      </label>
+      <button className="ap-btn ap-btn-red" onClick={()=>{if(window.confirm('Сбросить ВСЕ данные до исходных?\nКастомные страницы тоже удалятся!'))onReset();}}>
+        🔄 Сброс
+      </button>
+    </div>
+    <div className="ap-sec" style={{marginTop:22}}>Инструкция</div>
+    <div className="ap-info">
+      <ul style={{paddingLeft:16,margin:0,lineHeight:1.9}}>
+        <li>Все изменения сохраняются автоматически.</li>
+        <li>Экспортируй JSON как резервную копию перед крупными правками.</li>
+        <li>Импорт полностью заменяет текущие данные (включая страницы).</li>
+        <li>Данные привязаны к браузеру и устройству.</li>
+      </ul>
+    </div>
+  </>);
+}
+
+
+
+// ── Block renderer ────────────────────────────────────────────────────────────
+// Each block has: { id, type, ...props }
+// Types: hero, text, cards, list, table, steps, gallery, alert, divider, stats, links
+
+function CustomPage({ page }) {
+  if (!page) return null;
+  const blocks = page.blocks || [];
+
+  return (
+    <div className="page-animate" style={{ maxWidth: 1100 }}>
+      {/* Page header */}
+      <div className="page-header" style={{ marginBottom: 28 }}>
+        <div className="eyebrow">{page.eyebrow || 'Раздел'}</div>
+        <h1 className="page-title" style={{ fontSize: 36 }}>
+          <span style={{ marginRight: 12 }}>{page.icon || '📄'}</span>
+          {page.title}
+        </h1>
+        {page.description && (
+          <p className="page-desc">{page.description}</p>
+        )}
+      </div>
+
+      {/* Blocks */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {blocks.map(block => (
+          <BlockRenderer key={block.id} block={block} />
+        ))}
+      </div>
+
+      {blocks.length === 0 && (
+        <div style={{
+          padding: '48px 24px', textAlign: 'center', borderRadius: 20,
+          border: '1px dashed var(--stroke)', color: 'var(--muted)',
+        }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>📝</div>
+          <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 6 }}>Страница пуста</div>
+          <div style={{ fontSize: 14 }}>Добавь блоки в Админ-панели → Страницы → {page.title}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BlockRenderer({ block }) {
+  switch (block.type) {
+    case 'hero':    return <HeroBlock    block={block} />;
+    case 'text':    return <TextBlock    block={block} />;
+    case 'cards':   return <CardsBlock   block={block} />;
+    case 'list':    return <ListBlock    block={block} />;
+    case 'table':   return <TableBlock   block={block} />;
+    case 'steps':   return <StepsBlock   block={block} />;
+    case 'alert':   return <AlertBlock   block={block} />;
+    case 'divider': return <DividerBlock block={block} />;
+    case 'stats':   return <StatsBlock   block={block} />;
+    case 'links':   return <LinksBlock   block={block} />;
+    case 'twoCol':  return <TwoColBlock  block={block} />;
+    default:        return null;
+  }
+}
+
+/* ── HERO BLOCK ─────────────────────────────────────────────── */
+function HeroBlock({ block }) {
+  return (
+    <div style={{
+      position: 'relative', overflow: 'hidden',
+      padding: '36px 32px', borderRadius: 24,
+      border: '1px solid var(--stroke)',
+      background: `linear-gradient(135deg, ${block.colorFrom || 'rgba(216,255,71,.08)'}, ${block.colorTo || 'rgba(101,194,255,.06)'})`,
+    }}>
+      <div style={{ position: 'absolute', right: -40, top: -40, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.04), transparent 70%)' }} />
+      {block.eyebrow && <div className="eyebrow">{block.eyebrow}</div>}
+      <h2 style={{ fontSize: 32, fontWeight: 1000, lineHeight: 1.1, marginBottom: 12 }}>
+        {block.icon && <span style={{ marginRight: 10 }}>{block.icon}</span>}
+        {block.title}
+      </h2>
+      {block.text && <p style={{ color: 'var(--muted)', lineHeight: 1.75, maxWidth: 700, fontSize: 15 }}>{block.text}</p>}
+    </div>
+  );
+}
+
+/* ── TEXT BLOCK ─────────────────────────────────────────────── */
+function TextBlock({ block }) {
+  return (
+    <div className="card">
+      {block.title && <h3 style={{ marginBottom: 12 }}>{block.icon && <span style={{ marginRight: 8 }}>{block.icon}</span>}{block.title}</h3>}
+      <div style={{ color: '#dce5f4', lineHeight: 1.8, fontSize: 15, whiteSpace: 'pre-wrap' }}>{block.content}</div>
+    </div>
+  );
+}
+
+/* ── CARDS BLOCK ────────────────────────────────────────────── */
+function CardsBlock({ block }) {
+  const cols = block.columns || 2;
+  const items = block.items || [];
+  return (
+    <div>
+      {block.title && <div className="eyebrow" style={{ marginBottom: 12 }}>{block.title}</div>}
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 14 }}>
+        {items.map((item, i) => (
+          <div key={i} className="card" style={{ padding: 18 }}>
+            {item.icon && <div style={{ fontSize: 28, marginBottom: 10 }}>{item.icon}</div>}
+            {item.title && <h4 style={{ fontSize: 15, fontWeight: 800, marginBottom: 8, color: '#eef4fb' }}>{item.title}</h4>}
+            {item.text && <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.7 }}>{item.text}</p>}
+            {item.badge && <span className="mini-tag" style={{ marginTop: 10, display: 'inline-flex' }}>{item.badge}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── LIST BLOCK ─────────────────────────────────────────────── */
+function ListBlock({ block }) {
+  const items = block.items || [];
+  const style = block.style || 'bullet'; // bullet | check | number | arrow
+  const icons = { bullet: '•', check: '✓', arrow: '→' };
+  return (
+    <div className="card">
+      {block.title && <h3 style={{ marginBottom: 14 }}>{block.icon && <span style={{ marginRight: 8 }}>{block.icon}</span>}{block.title}</h3>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.map((item, i) => (
+          <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <span style={{
+              flexShrink: 0, marginTop: 2,
+              width: 24, height: 24, borderRadius: 7,
+              background: style === 'check' ? 'rgba(34,197,94,.15)' : 'rgba(216,255,71,.1)',
+              border: `1px solid ${style === 'check' ? 'rgba(34,197,94,.25)' : 'rgba(216,255,71,.2)'}`,
+              color: style === 'check' ? '#4ade80' : 'var(--accent)',
+              display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 900,
+            }}>
+              {style === 'number' ? i + 1 : icons[style] || '•'}
+            </span>
+            <div style={{ flex: 1, paddingTop: 3 }}>
+              {typeof item === 'string'
+                ? <span style={{ color: '#dce5f4', lineHeight: 1.7 }}>{item}</span>
+                : <>
+                    {item.title && <strong style={{ display: 'block', color: '#eef4fb', marginBottom: 3 }}>{item.title}</strong>}
+                    {item.text && <span style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.65 }}>{item.text}</span>}
+                  </>
+              }
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── TABLE BLOCK ────────────────────────────────────────────── */
+function TableBlock({ block }) {
+  const headers = block.headers || [];
+  const rows = block.rows || [];
+  return (
+    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      {block.title && (
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--stroke)', fontWeight: 800, fontSize: 15 }}>
+          {block.icon && <span style={{ marginRight: 8 }}>{block.icon}</span>}{block.title}
+        </div>
+      )}
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          {headers.length > 0 && (
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--stroke)', background: 'rgba(255,255,255,.02)' }}>
+                {headers.map((h, i) => (
+                  <th key={i} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800, color: 'var(--muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri} style={{ borderBottom: ri < rows.length - 1 ? '1px solid rgba(255,255,255,.04)' : 'none' }}>
+                {(Array.isArray(row) ? row : [row]).map((cell, ci) => (
+                  <td key={ci} style={{ padding: '11px 16px', color: ci === 0 ? '#eef4fb' : 'var(--muted)', lineHeight: 1.6 }}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ── STEPS BLOCK ────────────────────────────────────────────── */
+function StepsBlock({ block }) {
+  const items = block.items || [];
+  return (
+    <div>
+      {block.title && <div className="eyebrow" style={{ marginBottom: 12 }}>{block.title}</div>}
+      <div className="timeline">
+        {items.map((step, i) => (
+          <div key={i} className="timeline-item">
+            <div className="tl-num">{step.num || i + 1}</div>
+            <strong>{step.title}</strong>
+            {step.text && <span style={{ display: 'block', marginTop: 4 }}>{step.text}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── ALERT BLOCK ────────────────────────────────────────────── */
+const ALERT_STYLES = {
+  info:    { bg: 'rgba(101,194,255,.08)',  border: 'rgba(101,194,255,.2)',  color: '#a8d4ff' },
+  success: { bg: 'rgba(34,197,94,.08)',    border: 'rgba(34,197,94,.2)',    color: '#4ade80' },
+  warn:    { bg: 'rgba(245,158,11,.08)',   border: 'rgba(245,158,11,.2)',   color: '#fbbf24' },
+  danger:  { bg: 'rgba(239,68,68,.08)',    border: 'rgba(239,68,68,.2)',    color: '#f87171' },
+  accent:  { bg: 'rgba(216,255,71,.08)',   border: 'rgba(216,255,71,.2)',   color: '#d8ff47' },
+};
+function AlertBlock({ block }) {
+  const s = ALERT_STYLES[block.variant || 'info'];
+  return (
+    <div style={{ padding: '16px 18px', borderRadius: 16, background: s.bg, border: `1px solid ${s.border}`, lineHeight: 1.7 }}>
+      {block.title && <strong style={{ display: 'block', color: s.color, marginBottom: 6, fontSize: 14 }}>{block.icon && block.icon + ' '}{block.title}</strong>}
+      <span style={{ color: '#dce5f4', fontSize: 14 }}>{block.text}</span>
+    </div>
+  );
+}
+
+/* ── DIVIDER BLOCK ──────────────────────────────────────────── */
+function DividerBlock({ block }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '8px 0' }}>
+      <div style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />
+      {block.label && <span style={{ color: 'var(--muted)', fontSize: 12, fontWeight: 800, letterSpacing: '.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{block.label}</span>}
+      {block.label && <div style={{ flex: 1, height: 1, background: 'var(--stroke)' }} />}
+    </div>
+  );
+}
+
+/* ── STATS BLOCK ────────────────────────────────────────────── */
+function StatsBlock({ block }) {
+  const items = block.items || [];
+  return (
+    <div>
+      {block.title && <div className="eyebrow" style={{ marginBottom: 12 }}>{block.title}</div>}
+      <div className="kpi-grid">
+        {items.map((s, i) => (
+          <div key={i} className="kpi">
+            <strong>{s.value}</strong>
+            <span>{s.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── LINKS BLOCK ────────────────────────────────────────────── */
+function LinksBlock({ block }) {
+  const items = block.items || [];
+  return (
+    <div className="card">
+      {block.title && <h3 style={{ marginBottom: 14 }}>{block.icon && <span style={{ marginRight: 8 }}>{block.icon}</span>}{block.title}</h3>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {items.map((link, i) => (
+          <a key={i} href={link.url || '#'} target="_blank" rel="noreferrer"
+            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, border: '1px solid var(--stroke)', background: 'rgba(255,255,255,.02)', transition: '.15s', textDecoration: 'none', color: 'var(--text)' }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(101,194,255,.35)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--stroke)'}
+          >
+            <span style={{ fontSize: 18, flexShrink: 0 }}>{link.icon || '🔗'}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 800, fontSize: 14 }}>{link.title}</div>
+              {link.desc && <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 2 }}>{link.desc}</div>}
+            </div>
+            <span style={{ color: 'var(--accent2)', fontSize: 12 }}>↗</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── TWO COLUMN BLOCK ───────────────────────────────────────── */
+function TwoColBlock({ block }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      {(block.columns || []).map((col, i) => (
+        <div key={i} className="card">
+          {col.title && <h3 style={{ marginBottom: 10, fontSize: 17 }}>{col.icon && <span style={{ marginRight: 8 }}>{col.icon}</span>}{col.title}</h3>}
+          <div style={{ color: 'var(--muted)', lineHeight: 1.75, fontSize: 14, whiteSpace: 'pre-wrap' }}>{col.text}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+
+const styles = `
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+  padding: 30px;
+  border: 1px solid #2b364c;
+  background: linear-gradient(110deg, rgba(3,6,11,.97), rgba(15,20,30,.9) 58%, rgba(7,10,16,.96));
+  box-shadow: 0 22px 58px rgba(0,0,0,.32);
+  margin-bottom: 20px;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  bottom: -60px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(101,194,255,.12), transparent 68%);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 18px;
+  align-items: end;
+}
+.hero h1 {
+  font-size: 56px;
+  line-height: 0.98;
+  text-transform: uppercase;
+  font-weight: 1000;
+  letter-spacing: .02em;
+}
+.hero p {
+  margin-top: 14px;
+  max-width: 900px;
+  color: #d5def0;
+  font-size: 15px;
+  line-height: 1.78;
+}
+.hero-panel {
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+}
+.hero-panel-title {
+  font-size: 12px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #8b98ae;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+.home-card {
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  box-shadow: 0 22px 58px rgba(0,0,0,.32);
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+.home-card:hover {
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  transform: translateY(-2px);
+  border-color: #3a4660;
+}
+.home-card h3 { font-size: 18px; margin-bottom: 8px; }
+.home-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+@media (max-width: 1180px) { .hero-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .hero h1 { font-size: 32px; } }
+`;
+
+function HomePage({ data, onNavigate }) {
+  const { company } = data;
+
+  return (
+    <section className="page-animate">
+      <style>{styles}</style>
+      <div className="hero">
+        <div className="hero-grid">
+          <div>
+            <h1>{company.name}</h1>
+            <p>{company.description}</p>
+            <div className="chips">
+              {['О компании', 'Методичка продукта', 'Этапы консультации', 'CRM BIG', 'Возражения', 'Действия после продажи'].map(c => (
+                <div key={c} className="chip">{c}</div>
+              ))}
+            </div>
+          </div>
+          <div className="hero-panel">
+            <div className="hero-panel-title">Быстрый ориентир</div>
+            <ul>
+              <li>«Продукт» — всё по залам, картам, услугам, групповым секциям и документации.</li>
+              <li>«Этапы консультации» — 8 этапов, кейсы и рабочие формулировки.</li>
+              <li>«CRM обучение» — полный пошаговый процесс от лида до реализации сделки.</li>
+              <li>«Работа с возражениями» — подробный playbook по классическим и сложным кейсам.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="stats-grid">
+        {company.stats.map((s, i) => (
+          <div key={i} className="stat-card">
+            <div className="n">{s.value}</div>
+            <div className="t">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid-2" style={{ marginBottom: 20 }}>
+        <div className="card">
+          <div className="mini-head"><h3>О компании</h3><span className="mini-tag">основа</span></div>
+          <ul>
+            <li>Underground GYM основан в 2016 году.</li>
+            <li>Первый зал — подвальное помещение 300 м² на Мустафина 3.</li>
+            <li>Сегодня сеть работает в Астане, Алматы и Костанае.</li>
+            <li>Миссия компании: <strong>доступный фитнес для каждого</strong>.</li>
+            <li>Компания масштабируется и развивает внутреннюю систему обучения.</li>
+          </ul>
+          <div className="note">Используй этот блок как официальный вводный экран с историей, миссией и масштабом бренда.</div>
+        </div>
+
+        <div className="card">
+          <div className="mini-head"><h3>Ценности компании</h3><span className="mini-tag">культура</span></div>
+          <div className="timeline">
+            {company.values.map((v, i) => (
+              <div key={i} className="timeline-item">
+                <div className="tl-num">{i + 1}</div>
+                <strong>{v.title}</strong>
+                <span>{v.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="home-grid">
+        {[
+          { id: 'product', title: 'Продукт', desc: 'Форматы GYM и BIG, серебряная и золотая карты, ПТ, дежурный тренер, групповые секции, финансы и post-sale.' },
+          { id: 'sales', title: 'Этапы консультации', desc: 'Полный каркас диалога: установление контакта, квалификация, презентация, предзакрытие, закрытие, возражения, дожим и эмоции.' },
+          { id: 'crm', title: 'CRM BIG', desc: 'Лид, новая сделка, автосделка, воронка, постановка задач, примечания, три касания и обязательные поля при реализации.' },
+          { id: 'objections', title: 'Отработка возражений', desc: 'Подробные сценарии Н1 / Н2 / Н3 по классическим и сложным ситуациям, включая негативный опыт, страхи и переполненность.' },
+        ].map(card => (
+          <div key={card.id} className="home-card" onClick={() => onNavigate(card.id)}>
+            <h3>{card.title}</h3>
+            <p>{card.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="footer">{company.name} © внутреннее использование</div>
+    </section>
+  );
+}
+
+
+
+const TABS = [
+  { id: 'halls', label: 'О залах' },
+  { id: 'plans', label: 'Типы абонементов' },
+  { id: 'services', label: 'Виды услуг' },
+  { id: 'groups', label: 'Групповые секции' },
+  { id: 'finance', label: 'Финансы и документы' },
+  { id: 'after', label: 'После продажи' },
+];
+
+function ProductPage({ data }) {
+  const [tab, setTab] = useState('halls');
+  const p = data.product;
+
+  return (
+    <section className="page-animate">
+      <div className="page-header">
+        <div className="eyebrow">Раздел 1</div>
+        <div className="page-title">Продукт</div>
+        <div className="page-desc">Полный блок по методическому пособию: история и масштаб, филиалы и форматы залов, типы абонементов, персональные тренировки, дежурный тренер, групповые секции, финансы, документация и действия после продажи.</div>
+      </div>
+
+      <div className="tabs-row">
+        {TABS.map(t => (
+          <button key={t.id} className={`tab-btn${tab === t.id ? ' active' : ''}`} onClick={() => setTab(t.id)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'halls' && <HallsTab p={p} />}
+      {tab === 'plans' && <PlansTab p={p} />}
+      {tab === 'services' && <ServicesTab p={p} />}
+      {tab === 'groups' && <GroupsTab p={p} />}
+      {tab === 'finance' && <FinanceTab p={p} />}
+      {tab === 'after' && <AfterTab p={p} />}
+    </section>
+  );
+}
+
+function HallsTab({ p }) {
+  const h = p.halls;
+  return (
+    <div className="grid-2">
+      <div className="card">
+        <div className="mini-head"><h3>Форматы залов</h3><span className="mini-tag">gym / big</span></div>
+        <h4>{h.gym.title}</h4>
+        <ul>{h.gym.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <h4>{h.big.title}</h4>
+        <ul>{h.big.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <div className="formula">Логика презентации: GYM — доступный и понятный базовый формат. BIG — расширенный формат с дополнительными зонами, сауной и более широкой тренировочной инфраструктурой.</div>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Филиалы сети</h3><span className="mini-tag">11 клубов</span></div>
+        <h4>{h.silverBranches.title}</h4>
+        <ul>{h.silverBranches.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <h4>{h.goldBranches.title}</h4>
+        <ul>{h.goldBranches.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <div className="note">{h.scheduleNote}</div>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Как презентовать филиал</h3><span className="mini-tag">скрипт</span></div>
+        <div className="accent-list">
+          {h.presentationGuide.map((g, i) => (
+            <div key={i} className="accent-item">
+              <strong>{g.title}</strong>
+              <span>{g.desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Факты для доверия</h3><span className="mini-tag">масштаб</span></div>
+        <ul>
+          <li>Сеть обслуживает более 10 000 клиентов ежемесячно.</li>
+          <li>В компании более 170 персональных тренеров.</li>
+          <li>Компания выросла из одного подвального зала до сети в нескольких городах.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function PlansTab({ p }) {
+  return (
+    <div className="grid-2">
+      {p.plans.map((plan, i) => (
+        <div key={i} className="card">
+          <div className="mini-head"><h3>{plan.title}</h3><span className="mini-tag">{plan.tag}</span></div>
+          <ul>{plan.items.map((it, j) => <li key={j}>{it}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ServicesTab({ p }) {
+  return (
+    <div className="grid-2">
+      <div className="card">
+        <div className="mini-head"><h3>{p.pt.title}</h3><span className="mini-tag">подробно</span></div>
+        <ul>{p.pt.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <div className="tip-box">{p.pt.tip}</div>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>{p.dj.title}</h3><span className="mini-tag">режим</span></div>
+        <ul>{p.dj.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <h4>Расписание ДЖ</h4>
+        <ul>{p.dj.schedule.map((it, i) => <li key={i}>{it}</li>)}</ul>
+        <div className="warn-box">{p.dj.warn}</div>
+      </div>
+    </div>
+  );
+}
+
+function GroupsTab({ p }) {
+  return (
+    <div className="grid-2">
+      <div className="card">
+        <div className="mini-head"><h3>Групповые секции</h3><span className="mini-tag">расписание</span></div>
+        <ul>{p.groups.items.map((it, i) => <li key={i}>{it}</li>)}</ul>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Правила посещения</h3><span className="mini-tag">важно</span></div>
+        <ul>{p.groups.rules.map((it, i) => <li key={i}>{it}</li>)}</ul>
+      </div>
+    </div>
+  );
+}
+
+function FinanceTab({ p }) {
+  const f = p.finance;
+  return (
+    <div className="grid-2">
+      <div className="card">
+        <div className="mini-head"><h3>Валовая прибыль</h3><span className="mini-tag">формула</span></div>
+        <div className="formula"><strong>{f.formula}</strong></div>
+        <div className="check-box">Это нужно менеджеру и для расчёта сделки, и для корректного заполнения обязательных полей при реализации.</div>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Документы для физических лиц</h3><span className="mini-tag">физлицо</span></div>
+        <ol>{f.physDocs.map((it, i) => <li key={i}>{it}</li>)}</ol>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Документы для юридических лиц</h3><span className="mini-tag">юрлицо</span></div>
+        <ol>{f.legalDocs.map((it, i) => <li key={i}>{it}</li>)}</ol>
+        <div className="note">Закрывающие документы: ЭСФ + АВР в 2 экземплярах.</div>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Как объяснять финансовую часть</h3><span className="mini-tag">продажа</span></div>
+        <ul>{f.tips.map((it, i) => <li key={i}>{it}</li>)}</ul>
+      </div>
+    </div>
+  );
+}
+
+function AfterTab({ p }) {
+  const a = p.afterSale;
+  return (
+    <div className="grid-2">
+      <div className="card">
+        <div className="mini-head"><h3>Действия после продажи</h3><span className="mini-tag">post-sale</span></div>
+        <ol>{a.steps.map((it, i) => <li key={i}>{it}</li>)}</ol>
+      </div>
+      <div className="card">
+        <div className="mini-head"><h3>Пример записи в WhatsApp</h3><span className="mini-tag">шаблон</span></div>
+        <p>{a.example}</p>
+        <div className="warn-box">{a.warn}</div>
+      </div>
+    </div>
+  );
+}
+
+
+
+function SalesPage({ data }) {
+  const [tab, setTab] = useState('flow');
+  const s = data.sales;
+
+  return (
+    <section className="page-animate">
+      <div className="page-header">
+        <div className="eyebrow">Раздел 2</div>
+        <div className="page-title">Этапы консультации</div>
+        <div className="page-desc">Полный разбор 8 этапов консультации с логикой из обучения Underground GYM, примерами формулировок и кейсами менеджера Арайлым.</div>
+      </div>
+
+      <div className="tabs-row">
+        <button className={`tab-btn${tab === 'flow' ? ' active' : ''}`} onClick={() => setTab('flow')}>8 этапов</button>
+        <button className={`tab-btn${tab === 'cases' ? ' active' : ''}`} onClick={() => setTab('cases')}>Лучшие кейсы</button>
+      </div>
+
+      {tab === 'flow' && (
+        <div className="grid-2">
+          {s.stages.map((stage) => (
+            <div key={stage.id} className="card">
+              <h3>{stage.title}</h3>
+              {stage.items && <ul>{stage.items.map((it, i) => <li key={i}>{it}</li>)}</ul>}
+              {stage.desc && <p style={{ marginTop: 8 }}>{stage.desc}</p>}
+              {stage.good && <div className="example">{stage.good}</div>}
+              {stage.bad && <div className="warn-box">{stage.bad}</div>}
+              {stage.tip && <div className="tip-box">{stage.tip}</div>}
+              {stage.formula && <div className="formula">{stage.formula}</div>}
+              {stage.example && <div className="example" style={{ whiteSpace: 'pre-line' }}>{stage.example}</div>}
+              {stage.check && <div className="check-box">{stage.check}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'cases' && (
+        <div className="grid-2">
+          {s.cases.map((c, i) => (
+            <div key={i} className="card">
+              <div className="mini-head"><h3>{c.name}</h3><span className="mini-tag">{c.tag}</span></div>
+              <p>{c.desc}</p>
+              <div className="note">{c.result}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+
+
+function CrmPage({ data }) {
+  const crm = data.crm;
+
+  return (
+    <section className="page-animate">
+      <div className="page-header">
+        <div className="eyebrow">Раздел 3</div>
+        <div className="page-title">CRM обучение</div>
+        <div className="page-desc">Пошаговая инструкция по CRM BIG: полный процесс — с первого шага до продажи и реализации сделки.</div>
+      </div>
+
+      <div className="kpi-grid">
+        {crm.kpis.map((k, i) => (
+          <div key={i} className="kpi">
+            <strong>{k.value}</strong>
+            <span>{k.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid-2" style={{ marginTop: 16 }}>
+        {crm.steps.map((step, i) => (
+          <div key={i} className="card">
+            <div className="mini-head"><h3>{step.title}</h3><span className="mini-tag">{step.tag}</span></div>
+            {step.ordered
+              ? <ol>{step.items.map((it, j) => <li key={j}>{it}</li>)}</ol>
+              : <ul>{step.items.map((it, j) => <li key={j}>{it}</li>)}</ul>}
+            {step.warn && <div className="warn-box">{step.warn}</div>}
+            {step.note && <div className="note">{step.note}</div>}
+            {step.tip && <div className="tip-box">{step.tip}</div>}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid-2" style={{ marginTop: 16 }}>
+        <div className="card">
+          <div className="mini-head"><h3>Этапы воронки BIG</h3><span className="mini-tag">12 этапов</span></div>
+          <ol>{crm.funnel.map((f, i) => <li key={i}>{f}</li>)}</ol>
+        </div>
+        <div className="card">
+          <div className="mini-head"><h3>Обязательные поля при реализации</h3><span className="mini-tag">{crm.requiredFields.length} полей</span></div>
+          <ul>{crm.requiredFields.map((f, i) => <li key={i}>{f}</li>)}</ul>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="mini-head"><h3>Чек-лист менеджера</h3><span className="mini-tag">самопроверка</span></div>
+        <div className="split">
+          <div>
+            {crm.checklist.slice(0, 3).map((c, i) => (
+              <div key={i} className="accent-item" style={{ marginBottom: 10 }}>
+                <strong>{c.title}</strong>
+                <span>{c.desc}</span>
+              </div>
+            ))}
+          </div>
+          <div>
+            {crm.checklist.slice(3).map((c, i) => (
+              <div key={i} className="accent-item" style={{ marginBottom: 10 }}>
+                <strong>{c.title}</strong>
+                <span>{c.desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
+const styles = `
+.obj-home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.obj-home-card {
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: 0.18s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.obj-home-card:hover {
+  background: var(--surface2);
+  border-color: #3a4660;
+  transform: translateY(-2px);
+}
+.obj-home-card-icon { font-size: 24px; flex-shrink: 0; }
+.obj-home-card-body {}
+.obj-home-card-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+.obj-home-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.obj-home-card.classic { border-left: 2px solid rgba(101,194,255,.3); }
+.obj-home-card.hard { border-left: 2px solid rgba(239,68,68,.3); }
+.rule-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.rule-card {
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.rule-num {
+  font-size: 52px;
+  font-weight: 1000;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.rule-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+.rule-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.obj-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.obj-detail-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  transition: 0.15s;
+  flex-shrink: 0;
+}
+.obj-detail-back:hover { background: var(--surface2); }
+.principle-box {
+  background: var(--surface2);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 12px 12px 0;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.principle-label {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.principle-text { font-size: 14px; color: var(--text); line-height: 1.68; }
+.subvar-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.subvar-btn {
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--stroke);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.subvar-btn:hover { color: var(--text); border-color: #3a4660; }
+.subvar-btn.active {
+  background: rgba(239,68,68,.12);
+  border-color: rgba(239,68,68,.3);
+  color: #f87171;
+}
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.category-badge.classic { background: rgba(101,194,255,.1); border: 1px solid rgba(101,194,255,.2); color: #65c2ff; }
+.category-badge.hard { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.2); color: #f87171; }
+@media (max-width: 640px) {
+  .rule-cards { grid-template-columns: 1fr; }
+}
+`;
+
+function ObjectionsPage({ data }) {
+  const [selected, setSelected] = useState(null);
+  const [subVariant, setSubVariant] = useState(0);
+
+  const objs = data.objections;
+  const selectedObj = selected ? objs.find(o => o.id === selected) : null;
+
+  if (!selected) {
+    return (
+      <section className="page-animate">
+        <style>{styles}</style>
+        <div className="page-header">
+          <div className="eyebrow">Раздел 4</div>
+          <div className="page-title">Работа с возражениями</div>
+          <div className="page-desc">Три отказа — не повод сдаться. Каждый ответ клиента — это сигнал, а не финал.</div>
+        </div>
+
+        <div className="rule-cards">
+          {objs.find(o => o.isRule)?.rules.map((r, i) => (
+            <div key={i} className="rule-card">
+              <div className="rule-num">{r.num}</div>
+              <div className="rule-title">{r.title}</div>
+              <div className="rule-desc">{r.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7f8aa0', marginBottom: 10 }}>
+            Классические возражения
+          </div>
+          <div className="obj-home-grid">
+            {objs.filter(o => !o.isRule && o.category === 'classic').map(obj => (
+              <div key={obj.id} className={`obj-home-card classic`} onClick={() => { setSelected(obj.id); setSubVariant(0); }}>
+                <div className="obj-home-card-icon">{obj.icon}</div>
+                <div className="obj-home-card-body">
+                  <div className="obj-home-card-title">{obj.title}</div>
+                  <div className="obj-home-card-desc">{obj.homeDesc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#7f8aa0', marginBottom: 10 }}>
+            Сложные возражения
+          </div>
+          <div className="obj-home-grid">
+            {objs.filter(o => !o.isRule && o.category === 'hard').map(obj => (
+              <div key={obj.id} className={`obj-home-card hard`} onClick={() => { setSelected(obj.id); setSubVariant(0); }}>
+                <div className="obj-home-card-icon">{obj.icon}</div>
+                <div className="obj-home-card-body">
+                  <div className="obj-home-card-title">{obj.title}</div>
+                  <div className="obj-home-card-desc">{obj.homeDesc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const obj = selectedObj;
+  const activeData = obj.subVariants ? obj.subVariants[subVariant] : obj;
+
+  return (
+    <section className="page-animate">
+      <style>{styles}</style>
+      <div className="obj-detail-header">
+        <button className="obj-detail-back" onClick={() => setSelected(null)}>←</button>
+        <div>
+          <div className="eyebrow">Возражение</div>
+          <div style={{ fontSize: 28, fontWeight: 1000, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span>{obj.icon}</span> {obj.title}
+            <span className={`category-badge ${obj.category}`}>{obj.category === 'classic' ? 'Классическое' : 'Сложное'}</span>
+          </div>
+        </div>
+      </div>
+
+      {obj.subVariants && (
+        <div className="subvar-tabs">
+          {obj.subVariants.map((sv, i) => (
+            <button
+              key={sv.id}
+              className={`subvar-btn${subVariant === i ? ' active' : ''}`}
+              onClick={() => setSubVariant(i)}
+            >
+              {sv.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeData.principle && (
+        <div className="principle-box">
+          <div className="principle-label">⚡ Принцип</div>
+          <div className="principle-text">{activeData.principle}</div>
+        </div>
+      )}
+
+      {(activeData.steps || []).map((step, si) => (
+        <div key={si}>
+          <div className="step-badge">Н <span>{step.label}</span></div>
+          <div className="dialog-stack">
+            {step.lines.map((line, li) => (
+              <div key={li} className="dialog-line">
+                <div className={`dialog-speaker ${line.role}`}>{line.role === 'client' ? 'К' : 'М'}</div>
+                <div className={`dialog-bubble ${line.role}`}>{line.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {activeData.tip && <div className="tip-box" style={{ marginTop: 20 }}><strong>Совет:</strong> {activeData.tip}</div>}
+
+      <div style={{ marginTop: 24 }}>
+        <button
+          style={{ padding: '10px 18px', borderRadius: 12, border: '1px solid var(--stroke)', background: 'var(--surface)', color: 'var(--muted)', cursor: 'pointer', fontSize: 13, fontWeight: 700, transition: '0.15s' }}
+          onClick={() => setSelected(null)}
+          onMouseEnter={e => e.target.style.color = 'var(--text)'}
+          onMouseLeave={e => e.target.style.color = 'var(--muted)'}
+        >
+          ← Все возражения
+        </button>
+      </div>
+    </section>
+  );
+}
+
+
+
+const styles = `
+.materials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.file-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 15px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: var(--surface2);
+  margin-top: 12px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text);
+  transition: 0.18s ease;
+  cursor: pointer;
+  gap: 8px;
+}
+.file-link:hover { transform: translateY(-1px); border-color: #3b475d; background: #1e2d40; }
+`;
+
+const MATERIALS = [
+  { title: 'Методичка Underground GYM', tag: 'pptx / pdf', desc: 'Пособие по продукту, залам, картам, услугам, финансам и post-sale.', href: 'Методичка_Underground_GYM.pptx', icon: '📋' },
+  { title: 'CRM BIG — Обучение', tag: 'pptx / pdf', desc: 'Пошаговый процесс работы в CRM BIG.', href: 'CRM_BIG_Обучение.pptx', icon: '📊' },
+  { title: 'Этапы консультации', tag: 'pptx / pdf', desc: '8 этапов консультации, примеры и кейсы.', href: 'Этапы_консультации_Underground_GYM.pptx', icon: '💬' },
+  { title: 'Файл по возражениям', tag: 'встроено', desc: 'Расширенный блок возражений уже встроен прямо в интерфейс по референс-сайту.', href: null, icon: '🎯', internal: 'objections' },
+];
+
+function MaterialsPage({ onNavigate }) {
+  return (
+    <section className="page-animate">
+      <style>{styles}</style>
+      <div className="page-header">
+        <div className="eyebrow">Раздел 5</div>
+        <div className="page-title">Материалы</div>
+        <div className="page-desc">Раздел для исходных файлов. Здесь доступны все обучающие материалы в формате PPTX и PDF.</div>
+      </div>
+
+      <div className="materials-grid">
+        {MATERIALS.map((m, i) => (
+          <div key={i} className="card">
+            <div className="mini-head">
+              <h3 style={{ fontSize: 16 }}>{m.title}</h3>
+              <span className="mini-tag">{m.tag}</span>
+            </div>
+            <p className="muted">{m.desc}</p>
+            {m.internal ? (
+              <button className="file-link" onClick={() => onNavigate(m.internal)}>
+                {m.icon} Открыть раздел
+              </button>
+            ) : (
+              <a className="file-link" href={m.href} target="_blank" rel="noreferrer">
+                {m.icon} Открыть файл
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="note" style={{ marginTop: 20 }}>Чтобы кнопки загрузки файлов работали, рядом с index.html должны лежать файлы с соответствующими именами.</div>
+    </section>
+  );
+}
+
+
+
+const STATIC_SEARCH = {
+  home: "главная underground fitness компания ценности миссия сеть филиалы история результат команда рост",
+  product: "продукт методичка gym big серебряная карта золотая карта пт дежурный тренер групповые секции финансы",
+  sales: "этапы консультации установление контакта вопросы квалификация презентация закрытие возражения кейсы",
+  crm: "crm big лид новая сделка автосделка смена воронки задача примечание этапы воронки обязательные поля",
+  objections: "возражения правило трех н дорого подумаю нет времени обсудить с кем-то рассрочка",
+  materials: "материалы pdf методичка crm обучение этапы консультации файлы",
+};
+
+function App() {
+  const { data, update, reset, exportData, importData } = useStore();
+  const [activePage, setActivePage] = useState("home");
+  const [searchValue, setSearchValue] = useState("");
+  const [adminOpen, setAdminOpen] = useState(false);
+
+  // Apply CSS variables from theme
+  useEffect(() => {
+    const root = document.documentElement;
+    const t = data.theme;
+    root.style.setProperty("--bg", t.bg);
+    root.style.setProperty("--bg2", t.bg2);
+    root.style.setProperty("--surface", t.surface);
+    root.style.setProperty("--surface2", t.surface2);
+    root.style.setProperty("--surface3", t.surface3 || t.surface);
+    root.style.setProperty("--stroke", t.stroke);
+    root.style.setProperty("--muted", t.muted);
+    root.style.setProperty("--text", t.text);
+    root.style.setProperty("--accent", t.accent);
+    root.style.setProperty("--accent2", t.accent2);
+    root.style.setProperty("--ok", t.ok);
+    root.style.setProperty("--warn", t.warn);
+    root.style.setProperty("--danger", t.danger);
+    root.style.setProperty("--gold", t.gold);
+    root.style.setProperty("--sidebar-bg", t.sidebarBg || "rgba(8,12,18,0.94)");
+    root.style.setProperty("--font-family", t.fontFamily || "Inter, Arial, sans-serif");
+    document.body.style.fontFamily = t.fontFamily || "Inter, Arial, sans-serif";
+    document.body.style.background = `radial-gradient(circle at 12% 0%, rgba(101,194,255,.09), transparent 22%),
+      radial-gradient(circle at 90% 0%, rgba(216,255,71,.08), transparent 20%),
+      linear-gradient(180deg, ${t.bg} 0%, ${t.bg2} 100%)`;
+    document.body.style.color = t.text;
+  }, [data.theme]);
+
+  // Keyboard shortcut for admin
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "A") setAdminOpen(v => !v);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const customPages = useMemo(() => data.customPages || [], [data.customPages]);
+
+  const handleSearch = (val) => {
+    setSearchValue(val);
+    if (!val.trim()) return;
+    const q = val.trim().toLowerCase();
+    // Search static pages
+    const staticMatch = Object.entries(STATIC_SEARCH).find(([, kw]) => kw.toLowerCase().includes(q));
+    if (staticMatch) { setActivePage(staticMatch[0]); return; }
+    // Search custom pages
+    const customMatch = customPages.find(p =>
+      p.title.toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.keywords || '').toLowerCase().includes(q)
+    );
+    if (customMatch) setActivePage(customMatch.id);
+  };
+
+  const handleNavigate = (page) => {
+    setActivePage(page);
+    setSearchValue("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const pageKey = useMemo(() => `${activePage}-${Date.now()}`, [activePage]);
+
+  const activeCustomPage = customPages.find(p => p.id === activePage);
+
+  const noResult = searchValue && !Object.entries(STATIC_SEARCH).some(([, kw]) =>
+    kw.toLowerCase().includes(searchValue.toLowerCase())) &&
+    !customPages.some(p =>
+      p.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+      (p.keywords || '').toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+  return (
+    <div style={{ display: "flex", minHeight: "100vh", width: "100%", overflow: "hidden" }}>
+      <Sidebar
+        activePage={activePage}
+        onNavigate={handleNavigate}
+        onSearch={handleSearch}
+        searchValue={searchValue}
+        company={data.company}
+        customPages={customPages}
+        onOpenAdmin={() => setAdminOpen(true)}
+      />
+
+      <main style={{
+        flex: 1,
+        minWidth: 0,
+        width: 0,  /* critical: force flex child to shrink properly */
+        overflowX: "hidden",
+        overflowY: "auto",
+        height: "100vh",
+        padding: "28px 32px 48px",
+        boxSizing: "border-box",
+      }}>
+        {noResult && (
+          <div className="empty-search">
+            По запросу «{searchValue}» ничего не найдено.
+          </div>
+        )}
+
+        {activePage === "home"       && <HomePage       key={pageKey} data={data} onNavigate={handleNavigate} />}
+        {activePage === "product"    && <ProductPage    key={pageKey} data={data} />}
+        {activePage === "sales"      && <SalesPage      key={pageKey} data={data} />}
+        {activePage === "crm"        && <CrmPage        key={pageKey} data={data} />}
+        {activePage === "objections" && <ObjectionsPage key={pageKey} data={data} />}
+        {activePage === "materials"  && <MaterialsPage  key={pageKey} onNavigate={handleNavigate} />}
+
+        {activeCustomPage && (
+          <CustomPage key={pageKey} page={activeCustomPage} />
+        )}
+      </main>
+
+      {adminOpen && (
+        <AdminPanel
+          data={data}
+          onUpdate={update}
+          onReset={reset}
+          onExport={exportData}
+          onImport={importData}
+          onClose={() => setAdminOpen(false)}
+          onNavigate={handleNavigate}
+        />
+      )}
+    </div>
+  );
+}
+
+
+const _root=ReactDOM.createRoot(document.getElementById('root'));
+_root.render(React.createElement(App));
+</script>
+</body>
+</html>
