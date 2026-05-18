@@ -74,7 +74,7 @@ export default function App() {
 
   // Health check on mount
   useEffect(() => {
-    fetch('/api/health')
+    fetch(`${import.meta.env.VITE_API_URL || '/api'}/health`)
       .then(res => { if (res.ok) setServerOffline(false); else setServerOffline(true); })
       .catch(() => setServerOffline(true));
   }, []);
