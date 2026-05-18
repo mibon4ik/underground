@@ -102,18 +102,8 @@ Railway выдаст домен вида `https://underground-production.up.rail
 }
 ```
 
-Либо добавь в `vite.config.js`:
-
-```js
-export default defineConfig({
-  plugins: [react()],
-  define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify('https://твой-бэкенд.railway.app')
-  }
-})
-```
-
-И в коде используй `import.meta.env.VITE_API_URL` вместо `/api`.
+> **Важно:** Указывай домен **без `/api`** — код сам добавит `/api` в конце.
+> Например: `https://мой-бэкенд.railway.app`, а не `https://мой-бэкенд.railway.app/api`.
 
 ### 3. Переменные на Vercel
 

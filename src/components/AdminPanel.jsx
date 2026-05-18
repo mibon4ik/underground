@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const raw = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = raw.startsWith('http') ? raw.replace(/\/?$/, '/api') : raw;
 const SESSION_KEY = 'uf_admin_session';
 const TOKEN_KEY = 'uf_admin_token';
 

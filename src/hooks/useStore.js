@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const raw = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = raw.startsWith('http') ? raw.replace(/\/?$/, '/api') : raw;
 const getToken = () => localStorage.getItem('uf_admin_token');
 const authHeaders = () => {
   const t = getToken();
