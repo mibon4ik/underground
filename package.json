@@ -27,7 +27,7 @@
     "build": "vite build",
     "start": "npx prisma migrate deploy --schema backend/prisma/schema.prisma && node backend/server.js",
     "postinstall": "prisma generate",
-    "db:migrate": "prisma migrate deploy",
+    "db:migrate": "prisma migrate deploy --schema backend/prisma/schema.prisma",
     "db:seed": "node backend/prisma/seed.js",
     "db:studio": "npx prisma studio --schema backend/prisma/schema.prisma"
   }
