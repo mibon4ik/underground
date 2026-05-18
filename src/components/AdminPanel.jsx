@@ -293,23 +293,6 @@ export default function AdminPanel({ data, onUpdate, onReset, onExport, onImport
   const [saved, setSaved] = useState(false);
   const [expObj, setExpObj] = useState(null);
 
-  const update = useCallback((path, val) => {
-    onUpdate(path, val);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  }, [onUpdate]);
-
-  const logout = () => { closeSession(); setAuthed(false); };
-
-  const handleImport = e => {
-    const f = e.target.files[0]; if (!f) return;
-    const r = new FileReader();
-    r.onload = ev => { if (onImport(ev.target.result)) { setSaved(true); setTimeout(() => setSaved(false), 2000); } };
-    r.readAsText(f);
-  };
-
-  if (!authed) return <LoginScreen onSuccess={() => setAuthed(true)} onClose={onClose} />;
-
   const CATEGORIES = [
     {
       id: 'nav', label: '🧭 Навигация',
@@ -345,6 +328,23 @@ export default function AdminPanel({ data, onUpdate, onReset, onExport, onImport
 
   const allTabs = CATEGORIES.flatMap(c => c.tabs);
   const [cat, setCat] = useState(CATEGORIES[0].id);
+
+  const update = useCallback((path, val) => {
+    onUpdate(path, val);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }, [onUpdate]);
+
+  const logout = () => { closeSession(); setAuthed(false); };
+
+  const handleImport = e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => { if (onImport(ev.target.result)) { setSaved(true); setTimeout(() => setSaved(false), 2000); } };
+    r.readAsText(f);
+  };
+
+  if (!authed) return <LoginScreen onSuccess={() => setAuthed(true)} onClose={onClose} />;
 
   const activeCategory = CATEGORIES.find(c => c.id === cat) || CATEGORIES[0];
   const visibleTabs = activeCategory.tabs;
