@@ -10,10 +10,10 @@ const leadRoutes = require('./routes/leads');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', process.env.RAILWAY_PUBLIC_DOMAIN && `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`].filter(Boolean),
-  credentials: true,
-}));
+const corsOrigins = ['http://localhost:5173', 'http://localhost:3000'];
+if (process.env.RAILWAY_PUBLIC_DOMAIN) corsOrigins.push(`https://${process.env.RAILWAY_PUBLIC_DOMAIN}`);
+if (process.env.CORS_ORIGIN) corsOrigins.push(process.env.CORS_ORIGIN);
+app.use(cors({ origin: corsOrigins, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 
 app.use('/api/auth', authRoutes);
