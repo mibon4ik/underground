@@ -57,12 +57,12 @@ npm run dev
    - Сгенерирует Prisma Client (`postinstall`)
    - Соберёт фронтенд (`npm run build`)
    - Запустит сервер (`npm start`)
-5. После деплоя выполнить миграцию и сид в Railway Console:
+5. Миграции применяются **автоматически** при каждом запуске (встроено в `npm start`)
+6. После первого деплоя выполнить сид в Railway Console:
    ```
-   npx prisma migrate deploy --schema backend/prisma/schema.prisma
    npm run db:seed
    ```
-6. Готово — Railway сам пробросит домен
+7. Готово — Railway сам пробросит домен
 
 ## Локальный запуск с БД (через Docker)
 

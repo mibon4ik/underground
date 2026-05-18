@@ -48,25 +48,17 @@ git commit -m "initial"
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-### 5. Применить миграции
+### 5. Переменные окружения
 
-После успешного деплоя открой **Railway Console** (вкладка с терминалом) и выполни:
+В разделе **Variables** сервиса обязательно добавь `JWT_SECRET`.
 
-```bash
-npx prisma migrate deploy --schema backend/prisma/schema.prisma
-```
-
-Если миграций ещё нет (первый раз), создай их и примени:
-
-```bash
-# Только если нет папки migrations:
-# npx prisma migrate dev --schema backend/prisma/schema.prisma --name init
-#
-# Если есть — просто:
-npx prisma migrate deploy --schema backend/prisma/schema.prisma
-```
+> **Миграции применяются автоматически** при каждом запуске сервера — команда `npx prisma migrate deploy` встроена в `npm start`.
 
 ### 6. Заполнить базу начальными данными
+
+После первого успешного деплоя нажми **"Redeploy"** — теперь, когда БД есть, сервер запустится, миграции применятся, но данных ещё нет.
+
+Открой **Railway Console** (вкладка терминала) и выполни:
 
 ```bash
 npm run db:seed
@@ -74,11 +66,7 @@ npm run db:seed
 
 После этого появится пользователь `admin` / `admin123` и все стандартные настройки.
 
-### 7. Перезапустить сервис
-
-В Railway нажми **"Deploy"** → **"Redeploy"** (или просто подожди — сервис перезапустится сам).
-
-### 8. Готово
+### 7. Готово
 
 Railway выдаст домен вида `https://underground-production.up.railway.app`. Открой в браузере.
 
